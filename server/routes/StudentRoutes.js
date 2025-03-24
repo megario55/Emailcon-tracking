@@ -274,7 +274,7 @@ router.post('/sendtestmail', async (req, res) => {
   }));
 
 
-  const trackingPixel = `<img src="https://emailcon-tracking.onrender.com/track-email-open?emailId=${encodeURIComponent(emailData.to)}&userId=${userId}&campaignId=${campaignId}&t=${Date.now()}" width="1" height="1" style="display:none;" />`;
+  const trackingPixel = `<img src="https://emailcon-tracking.onrender.com/api/stud/track-email-open?emailId=${encodeURIComponent(emailData.to)}&userId=${userId}&campaignId=${campaignId}&t=${Date.now()}" width="1" height="1" style="display:none;" />`;
 
     const mailOptions = {
       from: `"${emailData.aliasName}" <${email}>`,
