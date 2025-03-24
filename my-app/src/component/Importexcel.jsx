@@ -321,6 +321,7 @@ for (let index = 0; index < rows.length; index++) {
                 attachments,
                 aliasName,
                 userId: user.id,
+                campaignId: campaignId,
             };
 
             try {
