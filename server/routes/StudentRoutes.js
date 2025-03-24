@@ -55,9 +55,6 @@ router.post('/sendtestmail', async (req, res) => {
       campaignId,
       userId
     } = req.body;
-    console.log("Received campaignId:", campaignId);
-    console.log("Type of campaignId:", typeof campaignId);
-
 
     // Find the current user by userId
     const user = await User.findById(userId);
@@ -274,7 +271,7 @@ router.post('/sendtestmail', async (req, res) => {
   }));
 
 
-  const trackingPixel = `<img src="https://emailcon-tracking.onrender.com/api/stud/track-email-open?emailId=${encodeURIComponent(emailData.to)}&userId=${userId}&campaignId=${campaignId}&t=${Date.now()}" width="1" height="1" style="display:none;" />`;
+  const trackingPixel = `<img src="https://emailcon-tracking.onrender.com/api/stud/track-email-open?emailId=${encodeURIComponent(emailData.recipient)}&userId=${userId}&campaignId=${campaignId}&t=${Date.now()}" width="1" height="1" style="display:none;" />`;
 
     const mailOptions = {
       from: `"${emailData.aliasName}" <${email}>`,
@@ -752,7 +749,8 @@ router.post('/sendbulkEmail', async (req, res) => {
     body,
     bgColor,attachments,
     previewtext,
-    userId
+    userId,
+    campaignId
   } = req.body;
 
   if (!recipientEmail) {
@@ -1007,6 +1005,7 @@ router.post('/sendbulkEmail', async (req, res) => {
       path: file.fileUrl, // Use Cloudinary URL directly
       contentType: file.mimetype
   }));
+  const trackingPixel = `<img src="https://emailcon-tracking.onrender.com/api/stud/track-email-open?emailId=${encodeURIComponent(recipientEmail)}&userId=${userId}&campaignId=${campaignId}&t=${Date.now()}" width="1" height="1" style="display:none;" />`;
 
     const mailOptions = {
       from: `"${aliasName}" <${email}>`,
@@ -1096,6 +1095,7 @@ router.post('/sendbulkEmail', async (req, res) => {
             </div>
               <div class="main" style="background-color:${bgColor || "white"}; box-shadow:0 4px 8px rgba(0, 0, 0, 0.2); border:1px solid rgb(255, 245, 245); padding:20px;width:650px;height:auto;border-radius:10px;margin:0 auto;">
                 ${dynamicHtml}
+                 ${trackingPixel}
               </div>
           </body>
         </html>

@@ -244,6 +244,7 @@ const handleSend = async () => {
         body: JSON.stringify(personalizedContent),
         bgColor,
         attachments,
+        campaignId: campaignId,
         previewtext,aliasName,
         userId: user.id,
         groupId: selectedGroup,

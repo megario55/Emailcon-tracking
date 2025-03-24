@@ -9,8 +9,7 @@ const ReadReport = () => {
 
   useEffect(() => {
     const fetchEmailCount = () => {
-      axios
-        .get(`${apiConfig.baseURL}/api/stud/get-email-open-count?userId=${userId}&campaignId=${campaignId}`)
+      axios.get(`${apiConfig.baseURL}/api/stud/get-email-open-count?userId=${userId}&campaignId=${campaignId}`)
         .then((response) => {
           setOpenCount(response.data.count);
         })
