@@ -1,6 +1,6 @@
 // src/apiConfig.js
 const apiConfig = {
-    baseURL:"https://emailcon-template-backend.onrender.com",
+    baseURL:"https://emailcon-tracking.onrender.com",
 };
 
 export default apiConfig;
