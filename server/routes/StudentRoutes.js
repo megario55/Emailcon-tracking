@@ -1576,8 +1576,6 @@ router.put("/camhistory/:id", async (req, res) => {
 });
 
 router.get("/track-email-open", async (req, res) => {
-  console.log("📩 Tracking pixel requested with query:", req.query);
-  console.log("📩 Request headers:", req.headers);
 
   const { emailId, userId, campaignId } = req.query;
 
@@ -1598,6 +1596,7 @@ router.get("/track-email-open", async (req, res) => {
         emailId,
         userId,
         campaignId,
+        sendTime: new Date(),
         ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
         userAgent: req.headers["user-agent"],
       });
@@ -1633,16 +1632,26 @@ router.get("/get-email-open-count", async (req, res) => {
   }
 
   try {
-    const count = await EmailOpen.countDocuments({ userId, campaignId });
+    // Fetch emails with valid emailId
+    const emailOpens = await EmailOpen.find({ userId, campaignId })
+      .select("emailId timestamp sendTime")
+      .lean(); // Convert Mongoose objects to plain JS objects
 
-    console.log(`Email open count for user ${userId}, campaign ${campaignId}: ${count}`);
+    // Check if emails exist
+    if (!emailOpens || emailOpens.length === 0) {
+      return res.json({ count: 0, emails: [] });
+    }
 
-    res.json({ count });
+    // Log data for debugging
+    console.log(`Email open details for user ${userId}, campaign ${campaignId}:`, emailOpens);
+
+    res.json({ count: emailOpens.length, emails: emailOpens });
   } catch (error) {
-    console.error("Error fetching email open count:", error);
+    console.error("Error fetching email open details:", error);
     res.status(500).send("Server Error");
   }
 });
+
 
 
 export default router;
