@@ -10,6 +10,7 @@ import Camhistory from "../models/Camhistory.js";
 // import ExcelStudent from "../models/Excelstudent.js";
 import { decryptPassword } from "../config/encryption.js";
 import EmailOpen from "../models/EmailOpen.js";
+import ClickTracking from "../models/ClickTracking.js";
 
 const router = express.Router();
 
