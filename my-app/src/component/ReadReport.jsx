@@ -48,28 +48,28 @@ const ReadReport = () => {
     };
 
     fetchEmailCount();
-    const interval = setInterval(fetchEmailCount, 3000); // Refresh every 5 seconds
+    const interval = setInterval(fetchEmailCount, 5000); // Refresh every 5 seconds
     return () => clearInterval(interval); // Cleanup on unmount
   }, [userId, campaignId]);
   
-  useEffect(() => {
+  useEffect(() => { 
+    if (!userId || !campaignId) return; // Prevent API calls with missing values
+  
     const fetchurlCount = () => {
       axios
-        .get(
-          `${apiConfig.baseURL}/api/stud/get-click?userId=${userId}&campaignId=${campaignId}`
-        )
+        .get(`${apiConfig.baseURL}/api/stud/get-click?userId=${userId}&campaignId=${campaignId}`)
         .then((response) => {
           setUrlCount(response.data.count);
         })
         .catch((error) => console.error("Error fetching click count", error));
     };
-
+  
     fetchurlCount();
-    const interval = setInterval(fetchurlCount, 3000); // Refresh every 5 seconds
+    const interval = setInterval(fetchurlCount, 5000); // Refresh every 5 seconds
+    
     return () => clearInterval(interval); // Cleanup on unmount
   }, [userId, campaignId]);
-
-
+  
   const fetchEmailDetails = async () => {
     try {
       const res = await axios.get(

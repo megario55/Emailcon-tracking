@@ -1695,9 +1695,9 @@ router.get("/track-click", async (req, res) => {
 });
 
 router.get("/get-click", async (req, res) => {
-  const { userId, campaignId, emailId, url } = req.query;
+  const { userId, campaignId } = req.query;
 
-  if (!userId || !campaignId || !emailId || !url) {
+  if (!userId || !campaignId) {
     return res.status(400).json({ error: "Missing required parameters" });
   }
 
