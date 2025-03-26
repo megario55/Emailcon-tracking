@@ -94,8 +94,8 @@ router.post('/sendtestmail', async (req, res) => {
         },
       });
     }
-    const generateTrackingLink = (originalUrl, userId, campaignId) => {
-      return `https://emailcon-tracking.onrender.com/api/stud/track-click?url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
+    const generateTrackingLink = (originalUrl, userId, campaignId, recipientEmail) => {
+      return `https://emailcon-tracking.onrender.com/api/stud/track-click?emailId=${encodeURIComponent(recipientEmail)}&url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
     };
     
 
@@ -136,7 +136,7 @@ router.post('/sendtestmail', async (req, res) => {
             <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                 <img src="${item.src1}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;" alt="image"/>
                     <a class = "img-btn"
-                    href="${generateTrackingLink(item.link1, userId, campaignId)}"
+                    href="${generateTrackingLink(item.link1, userId, campaignId,emailData.recipient)}"
                     target = "_blank"
                     style = "display:inline-block;padding:12px 25px;width:${item.buttonStyle1.width || 'auto'};color:${item.buttonStyle1.color || '#000'};text-decoration:none;background-color:${item.buttonStyle1.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle1.textAlign || 'left'};border-radius:${item.buttonStyle1.borderRadius || '5px'};" >
                         ${item.content1}
@@ -145,7 +145,7 @@ router.post('/sendtestmail', async (req, res) => {
             <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                 <img src="${item.src2}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;" alt="image"/>
                     <a class = "img-btn"
-                    href="${generateTrackingLink(item.link2, userId, campaignId)}"
+                    href="${generateTrackingLink(item.link2, userId, campaignId,emailData.recipient)}"
                     target = "_blank"
                     style = "display:inline-block;padding:12px 25px;width:${item.buttonStyle2.width || 'auto'};color:${item.buttonStyle2.color || '#000'};text-decoration:none;background-color:${item.buttonStyle2.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle2.textAlign || 'left'};border-radius:${item.buttonStyle2.borderRadius || '5px'};" >
                         ${item.content2}
@@ -177,22 +177,22 @@ router.post('/sendtestmail', async (req, res) => {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
                         <tr>
                             <td style="padding: 0 10px;">
-                                <a href="${generateTrackingLink(item.link1, userId, campaignId)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link1, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc1}" style="cursor:pointer;width:${item.style1.width};height:${item.style1.height};" alt="icon1"/>
                                 </a>
                             </td>
                             <td style="padding: 0 10px;">
-                                <a href="${generateTrackingLink(item.link2, userId, campaignId)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link2, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc2}" style="cursor:pointer;width:${item.style2.width};height:${item.style2.height};" alt="icon2"/>
                                 </a>
                             </td>
                             <td style="padding: 0 12px;">
-                                <a href="${generateTrackingLink(item.link3, userId, campaignId)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link3, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc3}" style="cursor:pointer;width:${item.style3.width};height:${item.style3.height};" alt="icon3"/>
                                 </a>
                             </td>
                             <td style="padding: 0 10px;">
-                                <a href="${generateTrackingLink(item.link1, userId, campaignId)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link1, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc4}" style="cursor:pointer;width:${item.style4.width};height:${item.style4.height};" alt="icon4"/>
                                 </a>
                             </td>
@@ -211,7 +211,7 @@ router.post('/sendtestmail', async (req, res) => {
                  style="background: url('${item.src1}') no-repeat center center; background-size: cover; border-radius: 10px; overflow: hidden; margin: 15px 0px !important;">
             <tr>
               <td align="center" valign="middle" style="height: ${item.style.height}; padding: 0;">
-                <a href="${generateTrackingLink(item.link, userId, campaignId)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <a href="${generateTrackingLink(item.link, userId, campaignId,emailData.recipient)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
   <img src="${item.src2}" width="70" height="70" 
        style="display: block; border-radius: 50%; background-color: white; cursor: pointer;" 
        alt="Play Video" border="0"/>
@@ -255,11 +255,11 @@ router.post('/sendtestmail', async (req, res) => {
           }
       else if (item.type === 'link-image') {
         return `<div style="text-align:${item.style.textAlign};margin:0 auto !important">
-        <a href="${generateTrackingLink(item.link, userId, campaignId)}" taget="_blank" style="text-decoration:none;"><img src="${item.src}" style="margin-top:10px;width:${item.style.width};text-align:${item.style.textAlign};pointer-events:none;height:${item.style.height};border-radius:10px;background-color:${item.style.backgroundColor}"/></a>
+        <a href="${generateTrackingLink(item.link, userId, campaignId,emailData.recipient)}" taget="_blank" style="text-decoration:none;"><img src="${item.src}" style="margin-top:10px;width:${item.style.width};text-align:${item.style.textAlign};pointer-events:none;height:${item.style.height};border-radius:10px;background-color:${item.style.backgroundColor}"/></a>
         </div>`;
       } else if (item.type === 'button') {
         return `<div style="text-align:${item.style.textAlign || 'left'};padding-top:20px;">
-                  <a href="${generateTrackingLink(item.link, userId, campaignId)}" target="_blank" style="display:inline-block;padding:12px 25px;width:${item.style.width || 'auto'};color:${item.style.color || '#000'};text-decoration:none;background-color:${item.style.backgroundColor || '#f0f0f0'};text-align:${item.style.textAlign || 'left'};border-radius:${item.style.borderRadius || '0px'};">
+                  <a href="${generateTrackingLink(item.link, userId, campaignId,emailData.recipient)}" target="_blank" style="display:inline-block;padding:12px 25px;width:${item.style.width || 'auto'};color:${item.style.color || '#000'};text-decoration:none;background-color:${item.style.backgroundColor || '#f0f0f0'};text-align:${item.style.textAlign || 'left'};border-radius:${item.style.borderRadius || '0px'};">
                     ${item.content || 'Button'}
                   </a>
                 </div>`;
@@ -1656,19 +1656,20 @@ router.get("/get-email-open-count", async (req, res) => {
 
 // Track URL Click
 router.get("/track-click", async (req, res) => {
-  const { userId, campaignId, url } = req.query;
+  const { userId, campaignId, url ,emailId} = req.query;
 
-  if (!userId || !campaignId || !url) {
-    console.error("❌ Missing parameters:", { userId, campaignId, url });
+  if (!userId || !campaignId || !url || !emailId) {
+    console.error("❌ Missing parameters:", { userId, campaignId, url,emailId });
     return res.status(400).json({ error: "Missing required parameters" });
   }
 
-  console.log(`✅ Clicked URL: ${url} | userId=${userId} | campaignId=${campaignId}`);
+  console.log(`✅ Clicked URL: ${url} | userId=${userId} | campaignId=${campaignId} | emailId=${emailId}`);
 
   try {
     const clickEntry = new ClickTracking({
       userId,
       campaignId,
+      emailId,
       clickedUrl: url,
       ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
       userAgent: req.headers["user-agent"],
