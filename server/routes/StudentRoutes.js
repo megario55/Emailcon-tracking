@@ -1702,16 +1702,29 @@ router.get("/get-click", async (req, res) => {
   }
 
   try {
-      // Fetch all unique users who clicked at least once in this campaign
-    const uniqueClicks = await ClickTracking.aggregate([
+    // 1️⃣ Count unique emails who clicked at least one link
+    const uniqueEmails = await ClickTracking.aggregate([
       { $match: { userId, campaignId } },
-      { $group: { _id: "$emailId" } } // Group by emailId to count unique users
+      { $group: { _id: "$emailId" } } // Group by unique emailId
     ]);
 
+    // 2️⃣ Get URLs with their corresponding emails + timestamps
+    const urlClicks = await ClickTracking.aggregate([
+      { $match: { userId, campaignId } },
+      { 
+        $group: { 
+          _id: "$clickedUrl", 
+          clicks: { 
+            $push: { emailId: "$emailId", timestamp: "$timestamp" } 
+          } 
+        } 
+      },
+      { $project: { clickedUrl: "$_id", clicks: 1, _id: 0 } } // Format output
+    ]);
 
-    res.json({ count: uniqueClicks.length, emails: uniqueClicks });
+    res.json({ count: uniqueEmails.length, urls: urlClicks });
   } catch (error) {
-    console.error("Error tracking click:", error);
+    console.error("Error fetching unique click count:", error);
     res.status(500).json({ error: "Server Error" });
   }
 });
