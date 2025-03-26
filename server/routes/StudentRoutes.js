@@ -94,7 +94,7 @@ router.post('/sendtestmail', async (req, res) => {
       });
     }
     const generateTrackingLink = (originalUrl, userId, campaignId) => {
-      return `https://emailcon-tracking.onrender.com/api/track-click?url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
+      return `https://emailcon-tracking.onrender.com/api/stud/track-click?url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
     };
     
 
