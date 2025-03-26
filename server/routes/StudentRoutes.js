@@ -1702,10 +1702,12 @@ router.get("/get-click", async (req, res) => {
   }
 
   try {
-    // Fetch all unique clicks for this campaign
-    const uniqueClicks = await ClickTracking.find({ userId, campaignId })
-      .select("emailId clickedUrl timestamp")
-      .lean();
+      // Fetch all unique users who clicked at least once in this campaign
+    const uniqueClicks = await ClickTracking.aggregate([
+      { $match: { userId, campaignId } },
+      { $group: { _id: "$emailId" } } // Group by emailId to count unique users
+    ]);
+
 
     res.json({ count: uniqueClicks.length, emails: uniqueClicks });
   } catch (error) {
