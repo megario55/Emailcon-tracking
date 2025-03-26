@@ -4,7 +4,6 @@ import {upload} from "../config/cloudinary.js";
 import Student from "../models/Student.js";
 import Group from "../models/Group.js";
 import Campaign from "../models/Campaign.js";
-import mongoose from "mongoose";
 import Template from "../models/Template.js";
 import User from "../models/User.js"; // Ensure you import the User model
 import Camhistory from "../models/Camhistory.js";
@@ -59,7 +58,6 @@ router.post('/sendtestmail', async (req, res) => {
     // Find the current user by userId
     const user = await User.findById(userId);
 
-
     if (!user) {
       return res.status(404).send('User not found');
     }
@@ -95,7 +93,10 @@ router.post('/sendtestmail', async (req, res) => {
         },
       });
     }
-
+    const generateTrackingLink = (originalUrl, userId, campaignId) => {
+      return `https://emailcon-tracking.onrender.com/api/track-click?url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
+    };
+    
 
     const emailContent = previewContent.map((item) => {
       if (item.type === 'para') {
@@ -134,7 +135,7 @@ router.post('/sendtestmail', async (req, res) => {
             <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                 <img src="${item.src1}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;" alt="image"/>
                     <a class = "img-btn"
-                    href = "${item.link1}"
+                    href="${generateTrackingLink(item.link1, userId, campaignId)}"
                     target = "_blank"
                     style = "display:inline-block;padding:12px 25px;width:${item.buttonStyle1.width || 'auto'};color:${item.buttonStyle1.color || '#000'};text-decoration:none;background-color:${item.buttonStyle1.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle1.textAlign || 'left'};border-radius:${item.buttonStyle1.borderRadius || '5px'};" >
                         ${item.content1}
@@ -143,7 +144,7 @@ router.post('/sendtestmail', async (req, res) => {
             <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                 <img src="${item.src2}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;" alt="image"/>
                     <a class = "img-btn"
-                    href = "${item.link2}"
+                    href="${generateTrackingLink(item.link2, userId, campaignId)}"
                     target = "_blank"
                     style = "display:inline-block;padding:12px 25px;width:${item.buttonStyle2.width || 'auto'};color:${item.buttonStyle2.color || '#000'};text-decoration:none;background-color:${item.buttonStyle2.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle2.textAlign || 'left'};border-radius:${item.buttonStyle2.borderRadius || '5px'};" >
                         ${item.content2}
@@ -175,22 +176,22 @@ router.post('/sendtestmail', async (req, res) => {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
                         <tr>
                             <td style="padding: 0 10px;">
-                                <a href="${item.links1 || '#'}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link1, userId, campaignId)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc1}" style="cursor:pointer;width:${item.style1.width};height:${item.style1.height};" alt="icon1"/>
                                 </a>
                             </td>
                             <td style="padding: 0 10px;">
-                                <a href="${item.links2 || '#'}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link2, userId, campaignId)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc2}" style="cursor:pointer;width:${item.style2.width};height:${item.style2.height};" alt="icon2"/>
                                 </a>
                             </td>
                             <td style="padding: 0 12px;">
-                                <a href="${item.links3 || '#'}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link3, userId, campaignId)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc3}" style="cursor:pointer;width:${item.style3.width};height:${item.style3.height};" alt="icon3"/>
                                 </a>
                             </td>
                             <td style="padding: 0 10px;">
-                                <a href="${item.links4 || '#'}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.link1, userId, campaignId)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc4}" style="cursor:pointer;width:${item.style4.width};height:${item.style4.height};" alt="icon4"/>
                                 </a>
                             </td>
@@ -209,7 +210,7 @@ router.post('/sendtestmail', async (req, res) => {
                  style="background: url('${item.src1}') no-repeat center center; background-size: cover; border-radius: 10px; overflow: hidden; margin: 15px 0px !important;">
             <tr>
               <td align="center" valign="middle" style="height: ${item.style.height}; padding: 0;">
-                <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <a href="${generateTrackingLink(item.link, userId, campaignId)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
   <img src="${item.src2}" width="70" height="70" 
        style="display: block; border-radius: 50%; background-color: white; cursor: pointer;" 
        alt="Play Video" border="0"/>
@@ -226,7 +227,7 @@ router.post('/sendtestmail', async (req, res) => {
         return `<table class="image-text" style="width:100%;height:220px !important;background-color:${item.style1.backgroundColor || '#f4f4f4'}; border-collapse:seperate;border-radius:${item.style1.borderRadius || '10px'};margin:15px 0px !important">
         <tr>
             <td style = "vertical-align:top;padding:10px;" >
-                <img  src="${item.src1}" style="border-radius:10px;width:200px !important;height:auto;pointer-events:none !important; object-fit:cover;" alt="image"/>                  
+                <img src="${item.src1}" style="border-radius:10px;width:200px !important;height:auto;pointer-events:none !important; object-fit:cover;" alt="image"/>                  
             </td>
             <td style = "vertical-align:top;padding:10px;color:${item.style1.color || 'black'};" >
                 <div class="img-para" style="overflow: auto;max-height: 200px !important;font-size:18px;">
@@ -246,18 +247,18 @@ router.post('/sendtestmail', async (req, res) => {
                 </div> 
             </td>
             <td style = "vertical-align:top;padding:10px;" >
-                <img  src="${item.src2}" style="border-radius:10px;width:200px !important;height:auto;pointer-events:none !important; object-fit:cover;" alt="image"/>                  
+                <img src="${item.src2}" style="border-radius:10px;width:200px !important;height:auto;pointer-events:none !important; object-fit:cover;" alt="image"/>                  
             </td>         
         </tr>
     </table>`
           }
       else if (item.type === 'link-image') {
         return `<div style="text-align:${item.style.textAlign};margin:0 auto !important">
-        <a href="${item.link || '#'}" taget="_blank" style="text-decoration:none;"><img src="${item.src}" style="margin-top:10px;width:${item.style.width};text-align:${item.style.textAlign};pointer-events:none;height:${item.style.height};border-radius:10px;background-color:${item.style.backgroundColor}"/></a>
+        <a href="${generateTrackingLink(item.link, userId, campaignId)}" taget="_blank" style="text-decoration:none;"><img src="${item.src}" style="margin-top:10px;width:${item.style.width};text-align:${item.style.textAlign};pointer-events:none;height:${item.style.height};border-radius:10px;background-color:${item.style.backgroundColor}"/></a>
         </div>`;
       } else if (item.type === 'button') {
         return `<div style="text-align:${item.style.textAlign || 'left'};padding-top:20px;">
-                  <a href="${item.link || '#'}" target="_blank" style="display:inline-block;padding:12px 25px;width:${item.style.width || 'auto'};color:${item.style.color || '#000'};text-decoration:none;background-color:${item.style.backgroundColor || '#f0f0f0'};text-align:${item.style.textAlign || 'left'};border-radius:${item.style.borderRadius || '0px'};">
+                  <a href="${generateTrackingLink(item.link, userId, campaignId)}" target="_blank" style="display:inline-block;padding:12px 25px;width:${item.style.width || 'auto'};color:${item.style.color || '#000'};text-decoration:none;background-color:${item.style.backgroundColor || '#f0f0f0'};text-align:${item.style.textAlign || 'left'};border-radius:${item.style.borderRadius || '0px'};">
                     ${item.content || 'Button'}
                   </a>
                 </div>`;
@@ -1652,6 +1653,43 @@ router.get("/get-email-open-count", async (req, res) => {
   }
 });
 
+// Track URL Click
+router.get("/track-click", async (req, res) => {
+  const { userId, campaignId, url } = req.query;
+
+  if (!userId || !campaignId || !url) {
+    console.error("❌ Missing parameters:", { userId, campaignId, url });
+    return res.status(400).json({ error: "Missing required parameters" });
+  }
+
+  console.log(`✅ Clicked URL: ${url} | userId=${userId} | campaignId=${campaignId}`);
+
+  try {
+    const clickEntry = new ClickTracking({
+      userId,
+      campaignId,
+      clickedUrl: url,
+      ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
+      userAgent: req.headers["user-agent"],
+    });
+
+    await clickEntry.save();
+    res.status(200).json({ message: "Click tracked successfully" });
+  } catch (err) {
+    console.error("❌ Error in track-click:", err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+router.get("/get-clicks", async (req, res) => {
+  try {
+    const clicks = await ClickTracking.find().sort({ timestamp: -1 });
+    res.status(200).json(clicks);
+  } catch (err) {
+    console.error("❌ Error fetching clicks:", err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
 
 
 export default router;

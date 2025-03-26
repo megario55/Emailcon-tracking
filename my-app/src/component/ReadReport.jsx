@@ -11,6 +11,8 @@ const ReadReport = () => {
   const [openCount, setOpenCount] = useState(0);
   const [campaigns, setCampaigns] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [showdelModal, setShowdelModal] = useState(false);
+  const [showfailModal, setShowfailModal] = useState(false);
   const [emailData, setEmailData] = useState([]);
   const navigate = useNavigate();
 
@@ -18,6 +20,7 @@ const ReadReport = () => {
     const fetchCampaigns = async () => {
       try {
         const res = await axios.get(`${apiConfig.baseURL}/api/stud/getcamhistory/${campaignId}`);
+        console.log("Campaigns", res.data);
         setCampaigns(res.data);
       } catch (err) {
         console.error(err);
@@ -58,8 +61,9 @@ const ReadReport = () => {
     }
   };
   
-  
-
+  const handleEditor = (userId, campaignId) => {
+    navigate(`/read-editor/${userId}/${campaignId}`);
+  };  
   const handleBackCampaign = () => {
     navigate("/campaigntable");
   };
@@ -67,7 +71,18 @@ const ReadReport = () => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
-
+  const handleopendelmodal = () => {  
+    setShowdelModal(true);
+  };
+  const handleClosedelModal = () => {
+    setShowdelModal(false);
+  };
+  const handleopenfailmodal = () => {  
+    setShowfailModal(true);
+  };
+  const handleClosefailModal = () => {
+    setShowfailModal(false);
+  };
   // Calculate Read Rate Percentage
   const readRate = campaigns.sendcount > 0 ? ((openCount / campaigns.totalcount) * 100).toFixed(2) : "0.00";
   const deliveredRate = campaigns.sendcount > 0 ? ((campaigns.sendcount / campaigns.totalcount) * 100).toFixed(2) : "0.00";
@@ -108,19 +123,90 @@ const ReadReport = () => {
             <p className="report-counts">0.86 %</p>
             <p className="report-view">32 Clicked mail</p>
           </div>
-          <div>
+          <div onClick={handleopendelmodal}>
             <p className="headings-report">Delivered Rate</p>
             <p className="report-counts">{deliveredRate} %</p>
             <p className="report-view">{campaigns.sendcount} Delivered</p>
           </div>
-          <div>
+          <div onClick={handleopenfailmodal}>
             <p className="headings-report">Failed Rate</p>
             <p className="report-counts">{failedRate} %</p>
             <p className="report-view">{campaigns.failedcount} Failed</p>
           </div>
         </div>
       </div>
+          {/* Modal for Delevered Details */}
+          {showdelModal && (
+        <div className="modal-overlay-read" onClick={handleClosedelModal}>
+          <div className="modal-content-read" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-heading-read">Delivered Rate</h2>
+            <table className="email-table-read">
+            <thead>
+  <tr>
+    <th>Mail ID-{campaigns.sendcount}</th>
+  </tr>
+</thead>
+<tbody>
+  {campaigns.sentEmails && campaigns.sentEmails.length > 0 ? (
+    campaigns.sentEmails.map((email, index) => (
+      <tr key={index}>
+        <td>{email}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="2">No Data Available</td>
+    </tr>
+  )}
+</tbody>
 
+
+            </table>
+            <button className="target-modal-read"  onClick={handleClosedelModal}>
+              Close
+            </button>
+            <button className="close-modal-read" onClick={handleClosedelModal}>
+              x
+            </button>
+          </div>
+        </div>
+      )}
+  {/* Modal for Failed Details */}
+  {showfailModal && (
+        <div className="modal-overlay-read" onClick={handleClosefailModal}>
+          <div className="modal-content-read" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-heading-read">Failed Rate</h2>
+            <table className="email-table-read">
+            <thead>
+  <tr>
+    <th>Mail ID-{campaigns.failedcount}</th>
+  </tr>
+</thead>
+<tbody>
+  {campaigns.failedEmails && campaigns.failedEmails.length > 0 ? (
+    campaigns.failedEmails.map((email, index) => (
+      <tr key={index}>
+        <td>{email}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="2">No Data Available</td>
+    </tr>
+  )}
+</tbody>
+
+
+            </table>
+            <button className="target-modal-read"  onClick={handleClosefailModal}>
+              Close
+            </button>
+            <button className="close-modal-read" onClick={handleClosefailModal}>
+              x
+            </button>
+          </div>
+        </div>
+      )}
       {/* Modal for Email Details */}
       {showModal && (
         <div className="modal-overlay-read" onClick={handleCloseModal}>
@@ -130,7 +216,6 @@ const ReadReport = () => {
             <thead>
   <tr>
     <th>Mail ID</th>
-    <th>Send Time</th>
     <th>Opened Time</th>
   </tr>
 </thead>
@@ -140,7 +225,6 @@ const ReadReport = () => {
     emailData.map((email, index) => (
       <tr key={index}>
         <td>{email.emailId}</td>
-        <td>{new Date(email.sendTime).toLocaleString()}</td>
         <td>{new Date(email.timestamp).toLocaleString()}</td>
       </tr>
     ))
@@ -152,11 +236,11 @@ const ReadReport = () => {
 </tbody>
 
             </table>
-            <button className="target-modal-read">
+            <button className="target-modal-read"   onClick={() => handleEditor(userId,campaignId)}>
               Retarget
             </button>
             <button className="close-modal-read" onClick={handleCloseModal}>
-              Close
+              x
             </button>
           </div>
         </div>

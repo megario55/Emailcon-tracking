@@ -103,20 +103,22 @@ input[type="color"]::-webkit-color-swatch {
     align-items: center;
 }
 
-.navbar {
+.navbar-read {
     /* width: 80%; */
     background-color: white;
     color: rgb(14, 13, 13);
     padding: 10px;
     display: flex;
-
     height: 75px;
     justify-content: space-between;
     box-shadow: 0 0 5px #9d9696;
 }
 
-.company-name {
-    color: #2f327D;
+.company-name-read {
+    color:#2f327D;
+    width: 300px !important;
+    font-size: 22px;
+    margin-top: 5px;
 }
 
 button {
@@ -241,7 +243,7 @@ button[data-tooltip]:hover::after {
     padding: 0px 8px;
 }
 
-.navbar h3 {
+.navbar-read h3 {
     font-size: 30px;
     align-items: center;
     margin-top: 15px;
@@ -591,7 +593,6 @@ button[data-tooltip]:hover::after {
 }
 .multiple-img {
     width: 100% !important;
-    height: 80% !important;
     margin: 0 auto;
     cursor: pointer !important;
 }
@@ -828,7 +829,6 @@ button[data-tooltip]:hover::after {
     display: flex;
     flex-direction: column;
     margin-left: 20px;
-    margin-top: 5px;
 }
 
 .edit-con-btn {
@@ -1315,6 +1315,13 @@ input:checked+.slider-send:before {
         font-size: 12px !important;
         width: 95% !important;
     }
+  
+    .navbar-header .company-name-read{
+        width: 150px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 18px !important;
+    }
 
     .modal-overlay-send {
         position: fixed;
@@ -1398,11 +1405,8 @@ input:checked+.slider-send:before {
     
 
 .multiimg {
-    height:60% !important;
+    height:auto !important;
 
-}
-.multiple-img{
-    height: 80% !important; 
 }
 
     /* Creates a small bottom half circle centered at the bottom of the footer */
@@ -1489,7 +1493,7 @@ input:checked+.slider-send:before {
     .image-text-wrapper {
          padding:0px !important;
          gap:0px !important;
-         margin-top: 10px !important;
+         margin-top: 10px;
     }
     .image-text-container{
            padding:0px !important;
@@ -1542,10 +1546,10 @@ input:checked+.slider-send:before {
         display: none;
     } */
 
-    .navbar {
+    .navbar-read {
         display: flex;
         justify-content: space-between;
-        height: 50px;
+        height: 70px;
     }
 
     /* .navbar-content {
@@ -1612,10 +1616,8 @@ input:checked+.slider-send:before {
         padding: 10px;
     }
 
-    .navbar h3 {
+    .navbar-read h3 {
         font-size: 20px;
-        width: 150px !important;
-        margin: 0;
     }
 
     .Mobile-nav {

@@ -1,9 +1,10 @@
 import React, { useState, useRef,useEffect } from "react";
 import axios from "axios";
-import "./Mainpage.css";
+import "./Readmainpage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {FaBars, FaTimes} from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import { FiEdit } from 'react-icons/fi'; // Importing icons
 
 import {
@@ -27,7 +28,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../apiconfig/apiConfig.js";
 
-const Mainpage = () => {
+const Readmainpage = () => {
   const [isLoading, setIsLoading] = useState(false); // State for loader
   const [isLoadingsch, setIsLoadingsch] = useState(false); // State for loader
   const [bgColor, setBgColor] = useState("#ffffff");
@@ -35,6 +36,8 @@ const Mainpage = () => {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [isMobileView, setIsMobileView] = useState(false);
+  const { userId, campaignId } = useParams();
+    const [readcampaigns, setReadcampaigns] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [emailData, setEmailData] = useState({
     recipient: "",
@@ -48,6 +51,7 @@ const Mainpage = () => {
   const [modalIndex, setModalIndex] = useState(null);
   const dragIndex = useRef(null);
   const [undoStack, setUndoStack] = useState([]);
+  const [emails, setEmails] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSendexcelModal, setShowSendexcelModal] = useState(false); // State for opening Sendexcelmail
@@ -56,7 +60,6 @@ const Mainpage = () => {
   const [previewContent, setPreviewContent] = useState([]);
   const [previewContentpre, setPreviewContentpre] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
-  const campaign = JSON.parse(localStorage.getItem("campaign"));
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef(null);
@@ -73,6 +76,35 @@ const [students, setStudents] = useState([]); // Stores all students
 const [selectedGroup, setSelectedGroup] = useState({});
 const [fieldNames, setFieldNames] = useState({});
 const templateRef = useRef(null);
+useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get(`${apiConfig.baseURL}/api/stud/getcamhistory/${campaignId}`);
+        setReadcampaigns(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCampaigns();
+  }, [campaignId]);
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const res = await axios.get(`${apiConfig.baseURL}/api/stud/get-email-open-count?userId=${userId}&campaignId=${campaignId}`
+        );
+        console.log("Email details:", res.data);
+ // Extract emailId from each email object in the array
+ if (res.data && Array.isArray(res.data.emails)) {
+  const extractedEmails = res.data.emails.map(emailObj => emailObj.emailId);
+  setEmails(extractedEmails);
+}
+      } catch (error) {
+        console.error("Error fetching email:", error);
+      }
+    };
+
+    fetchEmail();
+  }, [userId, campaignId]); // Runs when userId or campaignId changes
 
 const toggletemplate = (event) => {
   event.stopPropagation(); // Prevent event from bubbling up
@@ -699,15 +731,17 @@ const sendscheduleEmail = async () => {
     toast.warning("No preview content available.");
     return;
   }
-  if (!emailData || !emailData.recipient || !emailData.subject || !emailData.previewtext || !emailData.aliasName || !emailData.scheduledTime) {
+  if (!emailData || !emails.length || !emailData.subject || !emailData.previewtext || !emailData.aliasName || !emailData.scheduledTime) {
     toast.warning("Please fill in all required fields.");
     return;
   }
   setIsLoadingsch(true);
 
   try {
-    let recipients = emailData.recipient.split(",").map((email) => email.trim());
+    let recipients = emails.map(email => email); // Simply copy the array
+    console.log("Valid Recipients:", recipients);    
     let attachments = [];
+
     if (emailData.attachments && emailData.attachments.length > 0) {
       const formData = new FormData();
       
@@ -722,18 +756,31 @@ const sendscheduleEmail = async () => {
       );
     
       console.log("Uploaded Files:", uploadResponse.data);    
-      // Structure the uploaded files with original name and URL
-        attachments = uploadResponse.data.fileUrls.map((file, index) => ({
-        originalName: emailData.attachments[index].name, // Get original file name
-        fileUrl: file // Cloudinary URL
+      attachments = uploadResponse.data.fileUrls.map((file, index) => ({
+        originalName: emailData.attachments[index].name,
+        fileUrl: file 
       }));
     }
+// Ensure campaign name follows Read-Retarget pattern
+let campaignName = readcampaigns?.campaignname?.trim() || "";
+
+// If campaign name doesn't already contain "Read-Retarget", prepend it
+if (!campaignName.includes("Read-Retarget")) {
+  campaignName = `Read-Retarget ${campaignName}`;
+} else {
+  // Extract count and increment if it already has Read-Retarget
+  let match = campaignName.match(/Read-Retarget(?:-(\d+))?/);
+  let count = match && match[1] ? parseInt(match[1]) + 1 : 2;
+
+  campaignName = campaignName.replace(/Read-Retarget(?:-\d+)?/, `Read-Retarget-${count}`);
+}
+
     // Store campaign history with uploaded file data
     const campaignHistoryData = {
-      campaignname: campaign.camname,
+      campaignname: campaignName.trim(), 
       groupname: "No Group",
       totalcount: recipients.length,
-      recipients: emailData.recipient,
+      recipients: recipients.join(","), // Convert array to a single string
       sendcount: 0,
       failedcount: 0,
       sendEmails: 0,
@@ -741,7 +788,7 @@ const sendscheduleEmail = async () => {
       subject: emailData.subject,
       previewtext: emailData.previewtext,
       aliasName: emailData.aliasName,
-      attachments, // Store objects with originalName & fileUrl
+      attachments,
       previewContent,
       bgColor,
       exceldata: [{}],
@@ -771,7 +818,7 @@ const sendscheduleEmail = async () => {
       toast.warning("No preview content available.");
       return;
     }
-    if (!emailData || !emailData.recipient || !emailData.subject || !emailData.previewtext || !emailData.aliasName) {
+    if (!emailData || !emails.length || !emailData.subject || !emailData.previewtext || !emailData.aliasName) {
       toast.warning("Please fill in all required fields.");
       return;
     }
@@ -782,7 +829,12 @@ const sendscheduleEmail = async () => {
     sessionStorage.removeItem("toggled");
   
     try {
-      let recipients = emailData.recipient.split(",").map((email) => email.trim());
+      let recipients = emails.map(email => email); // Simply copy the array
+      console.log("Valid Recipients:", recipients);    
+      if (!recipients || recipients.length === 0) {
+        console.error("No recipients found!");
+        return;
+      }
       let sentEmails = [];
       let failedEmails = [];
       let attachments = [];
@@ -806,12 +858,26 @@ const sendscheduleEmail = async () => {
           fileUrl: file // Cloudinary URL
         }));
       }
+      // Ensure campaign name follows Read-Retarget pattern
+let campaignName = readcampaigns?.campaignname?.trim() || "";
+
+// If campaign name doesn't already contain "Read-Retarget", prepend it
+if (!campaignName.includes("Read-Retarget")) {
+  campaignName = `Read-Retarget ${campaignName}`;
+} else {
+  // Extract count and increment if it already has Read-Retarget
+  let match = campaignName.match(/Read-Retarget(?:-(\d+))?/);
+  let count = match && match[1] ? parseInt(match[1]) + 1 : 2;
+
+  campaignName = campaignName.replace(/Read-Retarget(?:-\d+)?/, `Read-Retarget-${count}`);
+}
+
       // Store initial campaign history with "Pending" status
       const campaignHistoryData = {
-        campaignname: campaign.camname,
+        campaignname:campaignName.trim(), 
         groupname: "No Group",
         totalcount: recipients.length,
-        recipients: "no mail",
+        recipients: "no mail",  
         sendcount: 0,
         failedcount: 0,
         sendEmails: 0,
@@ -982,12 +1048,26 @@ const sendscheduleEmail = async () => {
         className="mobile-content"
       >
         <div className="desktop-nav">
-          <nav className="navbar">
+          <nav className="navbar-read">
             <div>
-              <h3 className="company-name">
-                <span style={{ color: "#2f327D" }}>{campaign.camname}</span>{" "}
-                <span style={{ color: "#f48c06" }}>Campaign</span>
-              </h3>
+            <h5 className="company-name-read">
+  <span style={{ color: "#2f327D" }}>
+    {(() => {
+      let name = readcampaigns?.campaignname || ""; // Ensure it's a string
+
+      if (!name.includes("Read-Retarget")) {
+        return `Read-Retarget ${name}`; // If not present, add Read-Retarget
+      } 
+
+      let match = name.match(/Read-Retarget(?:-(\d+))?/);
+      let count = match && match[1] ? parseInt(match[1]) + 1 : 2; // If present, increment count
+
+      return name.replace(/Read-Retarget(?:-\d+)?/, `Read-Retarget-${count}`);
+    })()}
+  </span>
+  <span style={{ color: "#f48c06" }}> Campaign</span>
+</h5>
+
             </div>
             <div>
               <button
@@ -1072,7 +1152,7 @@ const sendscheduleEmail = async () => {
               )}
 
               <button
-                onClick={() => setIsOpen(true)}
+                onClick={() => setModalOpen(true)}
                 className="navbar-button-send"
               >
                 <span className="Nav-icons">
@@ -1090,12 +1170,25 @@ const sendscheduleEmail = async () => {
           </nav>
         </div>
         <div className="Mobile-nav">
-          <nav className="navbar">
+          <nav className="navbar-read">
             <div className="navbar-header">
-              <h3 className="company-name">
-                <span style={{ color: "#2f327D" }}>{campaign.camname}</span>{" "}
-                <span style={{ color: "#f48c06" }}>Campaign</span>
-              </h3>
+            <h5 className="company-name-read">
+  <span style={{ color: "#2f327D" }}>
+    {(() => {
+      let name = readcampaigns?.campaignname || ""; // Ensure it's a string
+
+      if (!name.includes("Read-Retarget")) {
+        return `Read-Retarget ${name}`; // If not present, add Read-Retarget
+      } 
+
+      let match = name.match(/Read-Retarget(?:-(\d+))?/);
+      let count = match && match[1] ? parseInt(match[1]) + 1 : 2; // If present, increment count
+
+      return name.replace(/Read-Retarget(?:-\d+)?/, `Read-Retarget-${count}`);
+    })()}
+  </span>
+  <span style={{ color: "#f48c06" }}> Campaign</span>
+</h5>
             </div>
             <div className="nav-edit">
               <div>
@@ -1176,12 +1269,7 @@ const sendscheduleEmail = async () => {
                   </div>
                 )}
                 <button
-                  onClick={() => {
-                    setIsOpen(true);
-                    if (window.innerWidth < 768) {
-                      setIsNavOpen(false); // Close toggle only in mobile view
-                    }
-                  }}
+                  
                   className="navbar-button-send"
                 >
                   <span className="Nav-icons">
@@ -4550,16 +4638,23 @@ const sendscheduleEmail = async () => {
     <div className="modal-content testmail-content">
       <h2>Send Single Mail</h2>
       <button className="close-btn" onClick={()=>setModalOpen(false)}>&times;</button>
-      <label htmlFor="Email">Email:</label>
-      <input
-        type="email"
-        placeholder="Recipient Email"
-        value={emailData.recipient}
-        onChange={(e) =>
-          setEmailData({ ...emailData, recipient: e.target.value })
-        }
-      />
-          <label htmlFor="Alias Name">Alias Name:</label>
+      <label htmlFor="Email">Recipient Emails:</label>
+      <div style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
+      <h3>Read-Retargert Email List</h3>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        {emails.length > 0 ? (
+          emails.map((email, index) => (
+            <li key={index} style={{ padding: "5px 0", borderBottom: "1px solid #eee" }}>
+              {email}
+            </li>
+          ))
+        ) : (
+          <li>No emails found</li>
+        )}
+      </ul>
+    </div>
+       
+      <label htmlFor="Alias Name">Alias Name:</label>
 
       <input
         type="text"
@@ -4707,4 +4802,4 @@ const sendscheduleEmail = async () => {
   );
 };
 
-export default Mainpage;
+export default Readmainpage;

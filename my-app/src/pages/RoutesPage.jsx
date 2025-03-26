@@ -10,6 +10,7 @@ import CampaignTable from "../component/CampaignTable";
 import ErrorPage from "../component/ErrorPage";  // Import the error page
 import Campaign from "../component/Campaign";
 import ReadReport from "../component/ReadReport";
+import Readmainpage from "./Readmainpage";
 
 function RoutesPage() {
   return (
@@ -20,6 +21,7 @@ function RoutesPage() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/editor" element={<Mainpage />} />
+        <Route path="/read-editor/:userId/:campaignId" element={<Readmainpage/>} />
         <Route path="/home" element={<Home />} />
         <Route path="/campaigntable" element={<CampaignTable />} />
         <Route path="/campaign" element={<Campaign/>} />

@@ -140,6 +140,9 @@ h3 {
     margin-top: 0;
     color: #333;
 }
+h2{
+    color: #2f327d;
+}
 
 /* Student List */
 .student-list {
@@ -306,6 +309,7 @@ select {
     }
 
     h2 {
+        color: #2f327d;
         font-size: 1.5rem;
     }
 
