@@ -177,22 +177,22 @@ router.post('/sendtestmail', async (req, res) => {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
                         <tr>
                             <td style="padding: 0 10px;">
-                                <a href="${generateTrackingLink(item.link1, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.links1, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc1}" style="cursor:pointer;width:${item.style1.width};height:${item.style1.height};" alt="icon1"/>
                                 </a>
                             </td>
                             <td style="padding: 0 10px;">
-                                <a href="${generateTrackingLink(item.link2, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.links2, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc2}" style="cursor:pointer;width:${item.style2.width};height:${item.style2.height};" alt="icon2"/>
                                 </a>
                             </td>
                             <td style="padding: 0 12px;">
-                                <a href="${generateTrackingLink(item.link3, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.links3, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc3}" style="cursor:pointer;width:${item.style3.width};height:${item.style3.height};" alt="icon3"/>
                                 </a>
                             </td>
                             <td style="padding: 0 10px;">
-                                <a href="${generateTrackingLink(item.link1, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
+                                <a href="${generateTrackingLink(item.links4, userId, campaignId,emailData.recipient)}" target="_blank" style="text-decoration:none;">
                                     <img src="${item.iconsrc4}" style="cursor:pointer;width:${item.style4.width};height:${item.style4.height};" alt="icon4"/>
                                 </a>
                             </td>
@@ -1656,27 +1656,38 @@ router.get("/get-email-open-count", async (req, res) => {
 
 // Track URL Click
 router.get("/track-click", async (req, res) => {
-  const { userId, campaignId, url ,emailId} = req.query;
+  const { userId, campaignId, url, emailId } = req.query;
 
   if (!userId || !campaignId || !url || !emailId) {
-    console.error("❌ Missing parameters:", { userId, campaignId, url,emailId });
+    console.error("❌ Missing parameters:", { userId, campaignId, url, emailId });
     return res.status(400).json({ error: "Missing required parameters" });
   }
 
   console.log(`✅ Clicked URL: ${url} | userId=${userId} | campaignId=${campaignId} | emailId=${emailId}`);
 
   try {
-    const clickEntry = new ClickTracking({
-      userId,
-      campaignId,
-      emailId,
-      clickedUrl: url,
-      ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
-      userAgent: req.headers["user-agent"],
-    });
+    // Check if a click entry already exists
+    const existingClick = await ClickTracking.findOne({ userId, campaignId, emailId, clickedUrl: url });
 
-    await clickEntry.save();
-    res.status(200).json({ message: "Click tracked successfully" });
+    if (!existingClick) {
+      // Create and save the new click entry
+      const clickEntry = new ClickTracking({
+        userId,
+        campaignId,
+        emailId,
+        clickedUrl: url,
+        ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
+        userAgent: req.headers["user-agent"],
+      });
+
+      await clickEntry.save();
+    } else {
+      console.log("⚠️ Duplicate click detected, skipping insert.");
+    }
+
+    // Redirect the user to the target URL
+    res.redirect(url);
+
   } catch (err) {
     console.error("❌ Error in track-click:", err);
     res.status(500).json({ error: "Server Error" });
