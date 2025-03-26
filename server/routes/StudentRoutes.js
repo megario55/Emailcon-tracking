@@ -1694,15 +1694,24 @@ router.get("/track-click", async (req, res) => {
   }
 });
 
-router.get("/get-clicks", async (req, res) => {
+router.get("/get-click", async (req, res) => {
+  const { userId, campaignId, emailId, url } = req.query;
+
+  if (!userId || !campaignId || !emailId || !url) {
+    return res.status(400).json({ error: "Missing required parameters" });
+  }
+
   try {
-    const clicks = await ClickTracking.find().sort({ timestamp: -1 });
-    res.status(200).json(clicks);
-  } catch (err) {
-    console.error("❌ Error fetching clicks:", err);
+    // Fetch all unique clicks for this campaign
+    const uniqueClicks = await ClickTracking.find({ userId, campaignId })
+      .select("emailId clickedUrl timestamp")
+      .lean();
+
+    res.json({ count: uniqueClicks.length, emails: uniqueClicks });
+  } catch (error) {
+    console.error("Error tracking click:", error);
     res.status(500).json({ error: "Server Error" });
   }
 });
-
 
 export default router;
