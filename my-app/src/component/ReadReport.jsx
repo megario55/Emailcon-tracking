@@ -17,8 +17,10 @@ const ReadReport = () => {
   const [urlCount, setUrlCount] = useState(0);
 const [clickedUrls, setClickedUrls] = useState([]); // Stores URLs + email clicks
 const [emailClickData, setEmailClickData] = useState([]); // Emails + timestamps for modal
+const [urlEmails, setUrlEmails] = useState([]); // Stores emails for each URL
 const [showClickModal, setShowClickModal] = useState(false);
 const [showallClickModal, setShowallClickModal] = useState(false);
+const [showOverallClickModal, setShowOverallClickModal] = useState(false);
 const navigate = useNavigate();
 
 
@@ -30,6 +32,9 @@ useEffect(() => {
       .get(`${apiConfig.baseURL}/api/stud/get-click?userId=${userId}&campaignId=${campaignId}`)
       .then((response) => {
         setUrlCount(response.data.count);
+        setClickedUrls(response.data.urls);
+        setUrlEmails(response.data.emails);
+        console.log("Click Data", response.data);
       })
       .catch((error) => console.error("Error fetching click data", error));
   };
@@ -82,18 +87,8 @@ const handleCloseClickModal = () => {
     return () => clearInterval(interval); // Cleanup on unmount
   }, [userId, campaignId]);
   
-  const fetchEmailClickDetails = async () => {
-    try {
-      const res = await axios.get(
-        `${apiConfig.baseURL}/api/stud/get-clicks?userId=${userId}&campaignId=${campaignId}`
-      );
-      console.log("Email click details", res.data);
-      setClickedUrls(res.data.urls);
-      setShowallClickModal(true);
-    } catch (err) {
-      console.error("Error fetching url details", err);
-      setClickedUrls([]); // Prevent errors
-      }
+  const fetchEmailClickDetails = () => {
+    setShowallClickModal(true);
   };
   const handleCloseallClickModal = () => {
     setShowallClickModal(false);  // Close Modal  
@@ -110,14 +105,19 @@ const handleCloseClickModal = () => {
       } else {
         setEmailData([]); // Ensure empty array if no data
       }
-
       setShowModal(true);
     } catch (err) {
       console.error("Error fetching email details", err);
       setEmailData([]); // Prevent errors
     }
   };
-  
+  const handleOverallClickDetails = () => {
+    setShowallClickModal(false); // Close Modal
+    setShowOverallClickModal(true); // Open Overall Click Modal
+  };
+  const handleCloseoverallModal = () => {
+    setShowOverallClickModal(false); // Close Modal
+  };
 
   const handleEditor = (userId, campaignId) => {
     navigate(`/read-editor/${userId}/${campaignId}`);
@@ -277,6 +277,12 @@ const handleCloseClickModal = () => {
       )}
     </tbody>
             </table>
+            <button
+              className="target-modal-read"
+              onClick={handleOverallClickDetails}
+            >
+              Overall Click Mails
+            </button>
             <button className="target-modal-read" onClick={handleCloseallClickModal}>
               Close
             </button>
@@ -398,6 +404,47 @@ const handleCloseClickModal = () => {
               Retarget
             </button>
             <button className="close-modal-read" onClick={handleCloseModal}>
+              x
+            </button>
+          </div>
+        </div>
+      )}
+ {/* Modal for Email Details */}
+ {showOverallClickModal && (
+        <div className="modal-overlay-read" onClick={handleCloseoverallModal}>
+          <div
+            className="modal-content-read"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="modal-heading-read">Overall Click Rate</h2>
+            <table className="email-table-read">
+              <thead>
+                <tr>
+                  <th>Mail ID</th>
+                </tr>
+              </thead>
+
+              <tbody>
+               {urlEmails.length > 0 ? (
+                urlEmails.map((email, index) => (
+                  <tr key={index}>
+                    <td>{email}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3">No Data Available</td>
+                </tr>
+              )}
+              </tbody>
+            </table>
+            <button
+              className="target-modal-read"
+              onClick={() => handleEditor(userId, campaignId)}
+            >
+              Retarget
+            </button>
+            <button className="close-modal-read" onClick={handleCloseoverallModal}>
               x
             </button>
           </div>

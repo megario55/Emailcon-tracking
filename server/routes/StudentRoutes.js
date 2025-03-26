@@ -1722,7 +1722,7 @@ router.get("/get-click", async (req, res) => {
       { $project: { clickedUrl: "$_id", clicks: 1, _id: 0 } } // Format output
     ]);
 
-    res.json({ count: uniqueEmails.length, urls: urlClicks });
+    res.json({ count: uniqueEmails.length, urls: urlClicks, emails: uniqueEmails });
   } catch (error) {
     console.error("Error fetching unique click count:", error);
     res.status(500).json({ error: "Server Error" });
