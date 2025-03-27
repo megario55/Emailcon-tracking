@@ -421,6 +421,7 @@ const handleToggle = async (e, campaignId) => {
             <tr>
               <th>Send Date</th>
               <th>Campaign Name</th>
+              <th>Alias Name</th>
               <th>Group Name</th>
               <th>Total Count</th>
               <th>Send Count</th>
@@ -436,6 +437,7 @@ const handleToggle = async (e, campaignId) => {
                 <tr key={campaign._id}>
                   <td>{campaign.senddate}</td>
                   <td>{campaign.campaignname}</td>
+                  <td>{campaign.aliasName}</td>
                   <td>{campaign.groupname}</td>
                   <td>{campaign.totalcount}</td>
                   <td>{campaign.sendcount}</td>

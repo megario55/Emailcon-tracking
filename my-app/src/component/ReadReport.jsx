@@ -34,7 +34,7 @@ useEffect(() => {
         setUrlCount(response.data.count);
         setClickedUrls(response.data.urls);
         setUrlEmails(response.data.emails);
-        console.log("Click Data", response.data);
+        // console.log("Click Data", response.data);
       })
       .catch((error) => console.error("Error fetching click data", error));
   };
@@ -46,6 +46,7 @@ useEffect(() => {
 
 // Handle View button click
 const handleViewClick = (clickData) => {
+  setShowallClickModal(false); // Close Modal
   setEmailClickData(clickData); // Set emails + timestamps for modal
   setShowClickModal(true);
 };
@@ -53,6 +54,7 @@ const handleViewClick = (clickData) => {
 // Close Modal
 const handleCloseClickModal = () => {
   setShowClickModal(false);
+  setShowallClickModal(true);
   setEmailClickData([]);
 };
   useEffect(() => {
@@ -61,7 +63,6 @@ const handleCloseClickModal = () => {
         const res = await axios.get(
           `${apiConfig.baseURL}/api/stud/getcamhistory/${campaignId}`
         );
-        console.log("Campaigns", res.data);
         setCampaigns(res.data);
       } catch (err) {
         console.error(err);
@@ -245,7 +246,7 @@ const handleCloseClickModal = () => {
           </div>
         </div>
       )}
- {/* Modal for Delevered Details */}
+ {/* Modal for Clicked Details */}
  {showallClickModal && (
         <div className="modal-overlay-read" onClick={handleCloseallClickModal}>
           <div
@@ -277,15 +278,17 @@ const handleCloseClickModal = () => {
       )}
     </tbody>
             </table>
+            <div className="overall-btn">
             <button
-              className="target-modal-read"
+              className="overall-modal-read"
               onClick={handleOverallClickDetails}
             >
               Overall Click Mails
             </button>
-            <button className="target-modal-read" onClick={handleCloseallClickModal}>
+            <button className="overall-cancel" onClick={handleCloseallClickModal}>
               Close
             </button>
+            </div>
             <button className="close-modal-read" onClick={handleCloseallClickModal}>
               x
             </button>
@@ -293,7 +296,7 @@ const handleCloseClickModal = () => {
         </div>
       )}
 
-{/* Modal for Click Details */}
+{/* Modal for link view Details */}
 {showClickModal && (
   <div className="modal-overlay-read" onClick={handleCloseClickModal}>
     <div className="modal-content-read" onClick={(e) => e.stopPropagation()}>
@@ -320,6 +323,12 @@ const handleCloseClickModal = () => {
           )}
         </tbody>
       </table>
+      <button
+              className="target-modal-read"
+              onClick={() => handleEditor(userId, campaignId)}
+            >
+              Retarget
+            </button>
       <button className="close-modal-read" onClick={handleCloseClickModal}>x</button>
     </div>
   </div>
@@ -409,14 +418,14 @@ const handleCloseClickModal = () => {
           </div>
         </div>
       )}
- {/* Modal for Email Details */}
+ {/* Modal for overall click email Details */}
  {showOverallClickModal && (
         <div className="modal-overlay-read" onClick={handleCloseoverallModal}>
           <div
             className="modal-content-read"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="modal-heading-read">Overall Click Rate</h2>
+            <h2 className="modal-heading-read">Overall Click Details</h2>
             <table className="email-table-read">
               <thead>
                 <tr>
@@ -425,18 +434,19 @@ const handleCloseClickModal = () => {
               </thead>
 
               <tbody>
-               {urlEmails.length > 0 ? (
-                urlEmails.map((email, index) => (
-                  <tr key={index}>
-                    <td>{email}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3">No Data Available</td>
-                </tr>
-              )}
-              </tbody>
+  {Array.isArray(urlEmails) && urlEmails.length > 0 ? (
+    urlEmails.map((email, index) => (
+      <tr key={index}>
+        <td>{email._id}</td> {/* Extract _id property */}
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="3">No Data Available</td>
+    </tr>
+  )}
+</tbody>
+
             </table>
             <button
               className="target-modal-read"

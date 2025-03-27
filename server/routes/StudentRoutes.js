@@ -93,7 +93,8 @@ router.post('/sendtestmail', async (req, res) => {
           rejectUnauthorized: false,
         },
       });
-    }
+    };
+
     const generateTrackingLink = (originalUrl, userId, campaignId, recipientEmail) => {
       return `https://emailcon-tracking.onrender.com/api/stud/track-click?emailId=${encodeURIComponent(recipientEmail)}&url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
     };
@@ -383,7 +384,8 @@ router.post('/sendexcelEmail', async (req, res) => {
     body,
     bgColor,attachments,
     previewtext,
-    userId
+    userId,
+    campaignId
   } = req.body;
   console.log("Attachments Data:",attachments);
 
@@ -467,7 +469,9 @@ router.post('/sendexcelEmail', async (req, res) => {
     .filter(([key]) => key === 'width' || key === 'height')
     .map(([key, value]) => `${key}:${value}`)
     .join(';');
-  
+    const generateTrackingLink = (originalUrl, userId, campaignId, recipientEmail) => {
+      return `https://emailcon-tracking.onrender.com/api/stud/track-click?emailId=${encodeURIComponent(recipientEmail)}&url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
+    };
     switch (type) {
       case 'logo':
         return `<div style="margin:0 auto !important;${styleString};">
@@ -533,7 +537,7 @@ router.post('/sendexcelEmail', async (req, res) => {
            style="${styleStringvideo};background: url('${src1}') no-repeat center center; background-size: cover; border-radius: 10px; overflow: hidden;margin:15px 0px !important;">
       <tr>
         <td align="center" valign="middle" style="${styleStringvideo};padding: 0;">
-          <a href="${link}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+          <a href="${generateTrackingLink(link, userId, campaignId,recipientEmail)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
             <img src="${src2}" width="70" height="70" 
                  style="display: block; border-radius: 50%; background-color: white;" 
                  alt="Click Now" />
@@ -554,22 +558,22 @@ router.post('/sendexcelEmail', async (req, res) => {
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
                     <tr>
                         <td style="padding: 0 10px;">
-                            <a href="${links1 || '#'}" target="_blank" style="text-decoration:none;">
+                            <a href="${generateTrackingLink(links1, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                                 <img src="${iconsrc1}" style="cursor:pointer;${styleString1};" alt="icon1"/>
                             </a>
                         </td>
                         <td style="padding: 0 10px;">
-                            <a href="${links2 || '#'}" target="_blank" style="text-decoration:none;">
+                            <a href="${generateTrackingLink(links2, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                                 <img src="${iconsrc2}" style="cursor:pointer;${styleString2};" alt="icon2"/>
                             </a>
                         </td>
                         <td style="padding: 0 12px;">
-                        <a href="${links3 || '#'}" target="_blank" style="text-decoration:none;">
+                        <a href="${generateTrackingLink(links3, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                             <img src="${iconsrc3}" style="cursor:pointer;${styleString3};" alt="icon3"/>
                         </a>
                     </td>
                      <td style="padding: 0 10px;">
-                        <a href="${links4 || '#'}" target="_blank" style="text-decoration:none;">
+                        <a href="${generateTrackingLink(links4, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                             <img src="${iconsrc4}" style="cursor:pointer;${styleString4};" alt="icon3"/>
                         </a>
                     </td>                     
@@ -581,7 +585,7 @@ router.post('/sendexcelEmail', async (req, res) => {
 
       case 'link-image':
         return `<div class="img-case" style="margin:0 auto !important;${styleString};">
-        <a href = "${link}" target = "_blank" style="text-decoration:none;"><img src="${src}" style="${styleString};margin-top:10px;border-radius:10px;" alt="image"/></a>
+        <a href = "${generateTrackingLink(link, userId, campaignId,recipientEmail)}"  target = "_blank" style="text-decoration:none;"><img src="${src}" style="${styleString};margin-top:10px;border-radius:10px;" alt="image"/></a>
         </div>`;
 
       case 'multi-image':
@@ -589,13 +593,13 @@ router.post('/sendexcelEmail', async (req, res) => {
           <tr>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src1}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover; ${styleString}" alt="image"/>
-                  <a class="img-btn" href="${link1}" target="_blank" style="${stylebuttonString1}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link1, userId, campaignId,recipientEmail)}" target="_blank" style="${stylebuttonString1}; display:inline-block; padding:12px 25px; text-decoration:none;">
                       ${content1}
                   </a>
               </td>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src2}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;${styleString}" alt="image"/>
-                  <a class="img-btn" href="${link2}" target="_blank" style="${stylebuttonString2}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link2, userId, campaignId,recipientEmail)}" target="_blank" style="${stylebuttonString2}; display:inline-block; padding:12px 25px; text-decoration:none;">
                       ${content2}
                   </a>
               </td>
@@ -619,7 +623,7 @@ router.post('/sendexcelEmail', async (req, res) => {
         return `<div class="para" style="${styleString};border-radius:10px;padding:10px;">${content}</div>`;
       case 'button':
         return `<div style="margin:20px auto 0 auto;text-align:center;">
-                  <a href = "${link}"
+                  <a href = "${generateTrackingLink(link, userId, campaignId,recipientEmail)}"
                   target = "_blank"
                   style = "${styleString};display:inline-block;padding:12px 25px;text-decoration:none;" >
                     ${content}
@@ -837,6 +841,10 @@ router.post('/sendbulkEmail', async (req, res) => {
     .filter(([key]) => key === 'width' || key === 'height')
     .map(([key, value]) => `${key}:${value}`)
     .join(';');
+
+    const generateTrackingLink = (originalUrl, userId, campaignId, recipientEmail) => {
+      return `https://emailcon-tracking.onrender.com/api/stud/track-click?emailId=${encodeURIComponent(recipientEmail)}&url=${encodeURIComponent(originalUrl)}&userId=${userId}&campaignId=${campaignId}`;
+    };
   
     switch (type) {
       case 'logo':
@@ -905,7 +913,7 @@ router.post('/sendbulkEmail', async (req, res) => {
            style="${styleStringvideo};background: url('${src1}') no-repeat center center; background-size: cover; border-radius: 10px; overflow: hidden;margin:15px 0px !important;">
       <tr>
         <td align="center" valign="middle" style="${styleStringvideo};padding: 0;">
-            <a href="${link}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+            <a href="${generateTrackingLink(link, userId, campaignId,recipientEmail)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
             <img src="${src2}" width="70" height="70" 
                  style="display: block; border-radius: 50%; background-color: white;" 
                  alt="Click Now" />
@@ -926,22 +934,22 @@ router.post('/sendbulkEmail', async (req, res) => {
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
                     <tr>
                         <td style="padding: 0 10px;">
-                            <a href="${links1 || '#'}" target="_blank" style="text-decoration:none;">
+                            <a href="${generateTrackingLink(links1, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                                 <img src="${iconsrc1}" style="cursor:pointer;${styleString1};" alt="icon1"/>
                             </a>
                         </td>
                         <td style="padding: 0 10px;">
-                            <a href="${links2 || '#'}" target="_blank" style="text-decoration:none;">
+                            <a href="${generateTrackingLink(links2, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                                 <img src="${iconsrc2}" style="cursor:pointer;${styleString2};" alt="icon2"/>
                             </a>
                         </td>
                         <td style="padding: 0 12px;">
-                        <a href="${links3 || '#'}" target="_blank" style="text-decoration:none;">
+                        <a href="${generateTrackingLink(links3, userId, campaignId,recipientEmail)}" target="_blank" style="text-decoration:none;">
                             <img src="${iconsrc3}" style="cursor:pointer;${styleString3};" alt="icon3"/>
                         </a>
                     </td>
                      <td style="padding: 0 10px;">
-                        <a href="${links4 || '#'}" target="_blank" style="text-decoration:none;">
+                        <a href="${generateTrackingLink(links4, userId, campaignId,recipientEmail)}"  target="_blank" style="text-decoration:none;">
                             <img src="${iconsrc4}" style="cursor:pointer;${styleString4};" alt="icon3"/>
                         </a>
                     </td>                     
@@ -953,7 +961,7 @@ router.post('/sendbulkEmail', async (req, res) => {
 
       case 'link-image':
         return `<div class="img-case" style="margin:0 auto !important;${styleString};">
-        <a href = "${link}" target = "_blank" style="text-decoration:none;"><img src="${src}" style="${styleString};margin-top:10px;border-radius:10px;" alt="image"/></a>
+        <a href ="${generateTrackingLink(link, userId, campaignId,recipientEmail)}" target = "_blank" style="text-decoration:none;"><img src="${src}" style="${styleString};margin-top:10px;border-radius:10px;" alt="image"/></a>
         </div>`;
 
       case 'multi-image':
@@ -961,13 +969,13 @@ router.post('/sendbulkEmail', async (req, res) => {
           <tr>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src1}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover; ${styleString}" alt="image"/>
-                  <a class="img-btn" href="${link1}" target="_blank" style="${stylebuttonString1}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link1, userId, campaignId,recipientEmail)}"  target="_blank" style="${stylebuttonString1}; display:inline-block; padding:12px 25px; text-decoration:none;">
                       ${content1}
                   </a>
               </td>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src2}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;${styleString}" alt="image"/>
-                  <a class="img-btn" href="${link2}" target="_blank" style="${stylebuttonString2}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link2, userId, campaignId,recipientEmail)}" target="_blank" style="${stylebuttonString2}; display:inline-block; padding:12px 25px; text-decoration:none;">
                       ${content2}
                   </a>
               </td>
@@ -992,7 +1000,7 @@ router.post('/sendbulkEmail', async (req, res) => {
         return `<div class="para" style="${styleString};border-radius:10px;padding:10px;">${content}</div>`;
       case 'button':
         return `<div style="margin:20px auto 0 auto;text-align:center;">
-                  <a href = "${link}"
+                  <a href = "${generateTrackingLink(link, userId, campaignId,recipientEmail)}"
                   target = "_blank"
                   style = "${styleString};display:inline-block;padding:12px 25px;text-decoration:none;" >
                     ${content}
