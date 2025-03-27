@@ -269,6 +269,17 @@
     border-radius: 5px;
     outline: none;
 }
+.modal-create-button-cancel-modal {
+    background: #f48c06;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
 
 .modal-create-button {
     background: #2f327d;

@@ -31,7 +31,7 @@
 }
 
 .select-group-container {
-  width: 180px;
+  width: 180px !important;
   position: relative;
   display: inline-block;
 }
@@ -74,7 +74,7 @@
     width: 98% !important;
   } */
   .ai-btn {
-    width: 50px;
+    width: 50px !important;
     margin-left: 10px;
     border: none;
     cursor: pointer;
@@ -178,7 +178,7 @@
     background: #fff;
     padding: 20px;
     border-radius: 8px;
-    width: 70%;
+    width: 70% !important;
     max-height: 500px;
     overflow-y: auto;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

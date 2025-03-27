@@ -57,23 +57,28 @@
 .report-counts{
     font-size: 24px;
     font-weight: 600;
-    color: rgb(124, 124, 124);
+    color: #f48c06;
 }
 
 .report-view{
     font-size: 15px;
 }
 .report-view:hover{
-    color:#f48c06;
+    color: #f48c06;
     cursor: pointer;
     text-decoration: underline;
 }
 .reports-content div{
     border: 1px solid rgb(212, 211, 211);
+    background-color:rgb(243, 240, 240) ;
     padding: 10px 15px;
     width: 280px;
     border-radius: 5px;
     cursor: pointer;
+}
+.reports-content div:hover{
+  transform: scale(1.03);
+  transition: transform 0.5s;
 }
 .modal-overlay-read {
     position: fixed;

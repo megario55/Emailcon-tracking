@@ -1,9 +1,10 @@
 import React, { useState, useRef,useEffect } from "react";
 import axios from "axios";
-import "./Mainpage.css";
+import "./Readmainpage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {FaBars, FaTimes} from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import { FiEdit } from 'react-icons/fi'; // Importing icons
 
 import {
@@ -27,7 +28,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../apiconfig/apiConfig.js";
 
-const Mainpage = () => {
+const Clickmainpage = () => {
   const [isLoading, setIsLoading] = useState(false); // State for loader
   const [isLoadingsch, setIsLoadingsch] = useState(false); // State for loader
   const [bgColor, setBgColor] = useState("#ffffff");
@@ -35,6 +36,9 @@ const Mainpage = () => {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [isMobileView, setIsMobileView] = useState(false);
+  const { userId, campaignId } = useParams();
+    const [clickcampaigns, setClickcampaigns] = useState({});
+      const [selectedContent, setSelectedContent] = useState(""); // Store selected content
   const [modalOpen, setModalOpen] = useState(false);
   const [emailData, setEmailData] = useState({
     recipient: "",
@@ -46,9 +50,9 @@ const Mainpage = () => {
   });
   const [selectedIndex, setSelectedIndex] = useState(null); // Track selected content index
   const [modalIndex, setModalIndex] = useState(null);
-  const [selectedContent, setSelectedContent] = useState(""); // Store selected content
   const dragIndex = useRef(null);
   const [undoStack, setUndoStack] = useState([]);
+  const [emails, setEmails] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSendexcelModal, setShowSendexcelModal] = useState(false); // State for opening Sendexcelmail
@@ -57,7 +61,6 @@ const Mainpage = () => {
   const [previewContent, setPreviewContent] = useState([]);
   const [previewContentpre, setPreviewContentpre] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
-  const campaign = JSON.parse(localStorage.getItem("campaign"));
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef(null);
@@ -74,6 +77,35 @@ const [students, setStudents] = useState([]); // Stores all students
 const [selectedGroup, setSelectedGroup] = useState({});
 const [fieldNames, setFieldNames] = useState({});
 const templateRef = useRef(null);
+useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get(`${apiConfig.baseURL}/api/stud/getcamhistory/${campaignId}`);
+        setClickcampaigns(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCampaigns();
+  }, [campaignId]);
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const res = await axios.get(`${apiConfig.baseURL}/api/stud/get-email-open-count?userId=${userId}&campaignId=${campaignId}`
+        );
+        console.log("Email details:", res.data);
+ // Extract emailId from each email object in the array
+ if (res.data && Array.isArray(res.data.emails)) {
+  const extractedEmails = res.data.emails.map(emailObj => emailObj.emailId);
+  setEmails(extractedEmails);
+}
+      } catch (error) {
+        console.error("Error fetching email:", error);
+      }
+    };
+
+    fetchEmail();
+  }, [userId, campaignId]); // Runs when userId or campaignId changes
 
 const toggletemplate = (event) => {
   event.stopPropagation(); // Prevent event from bubbling up
@@ -700,15 +732,17 @@ const sendscheduleEmail = async () => {
     toast.warning("No preview content available.");
     return;
   }
-  if (!emailData || !emailData.recipient || !emailData.subject || !emailData.previewtext || !emailData.aliasName || !emailData.scheduledTime) {
+  if (!emailData || !emails.length || !emailData.subject || !emailData.previewtext || !emailData.aliasName || !emailData.scheduledTime) {
     toast.warning("Please fill in all required fields.");
     return;
   }
   setIsLoadingsch(true);
 
   try {
-    let recipients = emailData.recipient.split(",").map((email) => email.trim());
+    let recipients = emails.map(email => email); // Simply copy the array
+    console.log("Valid Recipients:", recipients);    
     let attachments = [];
+
     if (emailData.attachments && emailData.attachments.length > 0) {
       const formData = new FormData();
       
@@ -723,18 +757,31 @@ const sendscheduleEmail = async () => {
       );
     
       console.log("Uploaded Files:", uploadResponse.data);    
-      // Structure the uploaded files with original name and URL
-        attachments = uploadResponse.data.fileUrls.map((file, index) => ({
-        originalName: emailData.attachments[index].name, // Get original file name
-        fileUrl: file // Cloudinary URL
+      attachments = uploadResponse.data.fileUrls.map((file, index) => ({
+        originalName: emailData.attachments[index].name,
+        fileUrl: file 
       }));
     }
+// Ensure campaign name follows Click-Retarget pattern
+let campaignName = clickcampaigns?.campaignname?.trim() || "";
+
+// If campaign name doesn't already contain "Click-Retarget", prepend it
+if (!campaignName.includes("OverallClick-Retarget")) {
+  campaignName = `OverallClick-Retarget ${campaignName}`;
+} else {
+  // Extract count and increment if it already has Click-Retarget
+  let match = campaignName.match(/OverallClick-Retarget(?:-(\d+))?/);
+  let count = match && match[1] ? parseInt(match[1]) + 1 : 2;
+
+  campaignName = campaignName.replace(/OverallClick-Retarget(?:-\d+)?/, `OverallClick-Retarget-${count}`);
+}
+
     // Store campaign history with uploaded file data
     const campaignHistoryData = {
-      campaignname: campaign.camname,
+      campaignname: campaignName.trim(), 
       groupname: "No Group",
       totalcount: recipients.length,
-      recipients: emailData.recipient,
+      recipients: recipients.join(","), // Convert array to a single string
       sendcount: 0,
       failedcount: 0,
       sendEmails: 0,
@@ -742,7 +789,7 @@ const sendscheduleEmail = async () => {
       subject: emailData.subject,
       previewtext: emailData.previewtext,
       aliasName: emailData.aliasName,
-      attachments, // Store objects with originalName & fileUrl
+      attachments,
       previewContent,
       bgColor,
       exceldata: [{}],
@@ -772,7 +819,7 @@ const sendscheduleEmail = async () => {
       toast.warning("No preview content available.");
       return;
     }
-    if (!emailData || !emailData.recipient || !emailData.subject || !emailData.previewtext || !emailData.aliasName) {
+    if (!emailData || !emails.length || !emailData.subject || !emailData.previewtext || !emailData.aliasName) {
       toast.warning("Please fill in all required fields.");
       return;
     }
@@ -783,7 +830,12 @@ const sendscheduleEmail = async () => {
     sessionStorage.removeItem("toggled");
   
     try {
-      let recipients = emailData.recipient.split(",").map((email) => email.trim());
+      let recipients = emails.map(email => email); // Simply copy the array
+      console.log("Valid Recipients:", recipients);    
+      if (!recipients || recipients.length === 0) {
+        console.error("No recipients found!");
+        return;
+      }
       let sentEmails = [];
       let failedEmails = [];
       let attachments = [];
@@ -807,12 +859,26 @@ const sendscheduleEmail = async () => {
           fileUrl: file // Cloudinary URL
         }));
       }
+      // Ensure campaign name follows Click-Retarget pattern
+let campaignName = clickcampaigns?.campaignname?.trim() || "";
+
+// If campaign name doesn't already contain "Click-Retarget", prepend it
+if (!campaignName.includes("OverallClick-Retarget")) {
+  campaignName = `OverallClick-Retarget ${campaignName}`;
+} else {
+  // Extract count and increment if it already has Click-Retarget
+  let match = campaignName.match(/OverallClick-Retarget(?:-(\d+))?/);
+  let count = match && match[1] ? parseInt(match[1]) + 1 : 2;
+
+  campaignName = campaignName.replace(/OverallClick-Retarget(?:-\d+)?/, `OverallClick-Retarget-${count}`);
+}
+
       // Store initial campaign history with "Pending" status
       const campaignHistoryData = {
-        campaignname: campaign.camname,
+        campaignname:campaignName.trim(), 
         groupname: "No Group",
         totalcount: recipients.length,
-        recipients: "no mail",
+        recipients: "no mail",  
         sendcount: 0,
         failedcount: 0,
         sendEmails: 0,
@@ -983,12 +1049,26 @@ const sendscheduleEmail = async () => {
         className="mobile-content"
       >
         <div className="desktop-nav">
-          <nav className="navbar">
+          <nav className="navbar-read">
             <div>
-              <h3 className="company-name">
-                <span style={{ color: "#2f327D" }}>{campaign.camname}</span>{" "}
-                <span style={{ color: "#f48c06" }}>Campaign</span>
-              </h3>
+            <h5 className="company-name-read">
+  <span style={{ color: "#2f327D" }}>
+    {(() => {
+      let name = clickcampaigns?.campaignname || ""; // Ensure it's a string
+
+      if (!name.includes("OverallClick-Retarget")) {
+        return `OverallClick-Retarget ${name}`; // If not present, add Click-Retarget
+      } 
+
+      let match = name.match(/OverallClick-Retarget(?:-(\d+))?/);
+      let count = match && match[1] ? parseInt(match[1]) + 1 : 2; // If present, increment count
+
+      return name.replace(/OverallClick-Retarget(?:-\d+)?/, `OverallClick-Retarget-${count}`);
+    })()}
+  </span>
+  <span style={{ color: "#f48c06" }}> Campaign</span>
+</h5>
+
             </div>
             <div>
               <button
@@ -1073,7 +1153,7 @@ const sendscheduleEmail = async () => {
               )}
 
               <button
-                onClick={() => setIsOpen(true)}
+                onClick={() => setModalOpen(true)}
                 className="navbar-button-send"
               >
                 <span className="Nav-icons">
@@ -1091,12 +1171,25 @@ const sendscheduleEmail = async () => {
           </nav>
         </div>
         <div className="Mobile-nav">
-          <nav className="navbar">
+          <nav className="navbar-read">
             <div className="navbar-header">
-              <h3 className="company-name">
-                <span style={{ color: "#2f327D" }}>{campaign.camname}</span>{" "}
-                <span style={{ color: "#f48c06" }}>Campaign</span>
-              </h3>
+            <h5 className="company-name-read">
+  <span style={{ color: "#2f327D" }}>
+    {(() => {
+      let name = clickcampaigns?.campaignname || ""; // Ensure it's a string
+
+      if (!name.includes("OverallClick-Retarget")) {
+        return `OverallClick-Retarget ${name}`; // If not present, add Click-Retarget
+      } 
+
+      let match = name.match(/OverallClick-Retarget(?:-(\d+))?/);
+      let count = match && match[1] ? parseInt(match[1]) + 1 : 2; // If present, increment count
+
+      return name.replace(/OverallClick-Retarget(?:-\d+)?/, `OverallClick-Retarget-${count}`);
+    })()}
+  </span>
+  <span style={{ color: "#f48c06" }}> Campaign</span>
+</h5>
             </div>
             <div className="nav-edit">
               <div>
@@ -1177,12 +1270,7 @@ const sendscheduleEmail = async () => {
                   </div>
                 )}
                 <button
-                  onClick={() => {
-                    setIsOpen(true);
-                    if (window.innerWidth < 768) {
-                      setIsNavOpen(false); // Close toggle only in mobile view
-                    }
-                  }}
+                  
                   className="navbar-button-send"
                 >
                   <span className="Nav-icons">
@@ -3519,34 +3607,35 @@ const sendscheduleEmail = async () => {
                       onClick={() => handleItemClick(index)}
                       style={item.style}
                     >
-                  {item.type === "para" && (
-  <>
-    <p
-      className="border"
-      contentEditable
-      suppressContentEditableWarning
-      onClick={() => {
-        setSelectedIndex(index);
-        setSelectedContent(item.content); // Store the correct content
-        setIsModalOpen(true); // Open the modal
-      }}
-      style={item.style}
-      dangerouslySetInnerHTML={{ __html: item.content }}
-    />
-    {isModalOpen && selectedIndex === index && (
-      <ParaEditor
-        isOpen={isModalOpen}
-        content={selectedContent} // Pass the correct content
-        style={item.style}
-        onSave={(newContent) => {
-          updateContent(index, { content: newContent }); // Save the new content
-          setIsModalOpen(false);
-        }}
-        onClose={() => setIsModalOpen(false)}
-      />
-    )}
-  </>
-)}
+                     {item.type === "para" && (
+                      <>
+                        <p
+                          className="border"
+                          contentEditable
+                          suppressContentEditableWarning
+                          onClick={() => {
+                            setSelectedIndex(index);
+                            setSelectedContent(item.content); // Store the correct content
+                            setIsModalOpen(true); // Open the modal
+                          }}
+                          style={item.style}
+                          dangerouslySetInnerHTML={{ __html: item.content }}
+                        />
+                        {isModalOpen && selectedIndex === index && (
+                          <ParaEditor
+                            isOpen={isModalOpen}
+                            content={selectedContent} // Pass the correct content
+                            style={item.style}
+                            onSave={(newContent) => {
+                              updateContent(index, { content: newContent }); // Save the new content
+                              setIsModalOpen(false);
+                            }}
+                            onClose={() => setIsModalOpen(false)}
+                          />
+                        )}
+                      </>
+                    )}
+                      
 
 {item.type === "multipleimage" ? (
                         <div className="Layout-img">
@@ -4553,16 +4642,23 @@ const sendscheduleEmail = async () => {
     <div className="modal-content testmail-content">
       <h2>Send Single Mail</h2>
       <button className="close-btn" onClick={()=>setModalOpen(false)}>&times;</button>
-      <label htmlFor="Email">Email:</label>
-      <input
-        type="email"
-        placeholder="Recipient Email"
-        value={emailData.recipient}
-        onChange={(e) =>
-          setEmailData({ ...emailData, recipient: e.target.value })
-        }
-      />
-          <label htmlFor="Alias Name">Alias Name:</label>
+      <label htmlFor="Email">Recipient Emails:</label>
+      <div style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
+      <h3>Click-Retargert Email List</h3>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        {emails.length > 0 ? (
+          emails.map((email, index) => (
+            <li key={index} style={{ padding: "5px 0", borderBottom: "1px solid #eee" }}>
+              {email}
+            </li>
+          ))
+        ) : (
+          <li>No emails found</li>
+        )}
+      </ul>
+    </div>
+       
+      <label htmlFor="Alias Name">Alias Name:</label>
 
       <input
         type="text"
@@ -4710,4 +4806,4 @@ const sendscheduleEmail = async () => {
   );
 };
 
-export default Mainpage;
+export default Clickmainpage;

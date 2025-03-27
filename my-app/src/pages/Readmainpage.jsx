@@ -38,6 +38,7 @@ const Readmainpage = () => {
   const [isMobileView, setIsMobileView] = useState(false);
   const { userId, campaignId } = useParams();
     const [readcampaigns, setReadcampaigns] = useState({});
+    const [selectedContent, setSelectedContent] = useState(""); // Store selected content
   const [modalOpen, setModalOpen] = useState(false);
   const [emailData, setEmailData] = useState({
     recipient: "",
@@ -3607,30 +3608,33 @@ if (!campaignName.includes("Read-Retarget")) {
                       style={item.style}
                     >
                       {item.type === "para" && (
-                        <>
-                          <p
-                            className="border"
-                            contentEditable
-                            suppressContentEditableWarning
-                            onClick={() => {
-                              setSelectedIndex(index);
-                              setIsModalOpen(true); // Open the modal
-                            }}
-                            style={item.style}
-                            dangerouslySetInnerHTML={{ __html: item.content }} // Render HTML content here
-                          />
-                          <ParaEditor
-                            isOpen={isModalOpen}
-                            content={item.content} // Pass the content to the modal
-                            style={item.style}
-                            onSave={(newContent) => {
-                              updateContent(index, { content: newContent }); // Save the new content
-                              setIsModalOpen(false); // Close the modal after saving
-                            }}
-                            onClose={() => setIsModalOpen(false)} // Close the modal without saving
-                          />
-                        </>
-                      )}
+                       <>
+                         <p
+                           className="border"
+                           contentEditable
+                           suppressContentEditableWarning
+                           onClick={() => {
+                             setSelectedIndex(index);
+                             setSelectedContent(item.content); // Store the correct content
+                             setIsModalOpen(true); // Open the modal
+                           }}
+                           style={item.style}
+                           dangerouslySetInnerHTML={{ __html: item.content }}
+                         />
+                         {isModalOpen && selectedIndex === index && (
+                           <ParaEditor
+                             isOpen={isModalOpen}
+                             content={selectedContent} // Pass the correct content
+                             style={item.style}
+                             onSave={(newContent) => {
+                               updateContent(index, { content: newContent }); // Save the new content
+                               setIsModalOpen(false);
+                             }}
+                             onClose={() => setIsModalOpen(false)}
+                           />
+                         )}
+                       </>
+                     )}
                       
 
 {item.type === "multipleimage" ? (
@@ -4562,7 +4566,7 @@ if (!campaignName.includes("Read-Retarget")) {
                 </button>
                 <button
                   onClick={handlecancel}
-                  className="modal-create-button"
+                  className="modal-create-button-cancel"
                 >
                   Cancel
                 </button>

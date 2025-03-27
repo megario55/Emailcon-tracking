@@ -162,7 +162,7 @@ const GroupModalnew = ({ onClose }) => {
       Create
     </button>
     <button onClick={() => setIsFirstModal(false)}
-                  className="modal-btn btn-create-group"
+                  className="modal-btn-cancel btn-create-group"
                 >
                   Cancel
                 </button>
@@ -297,6 +297,11 @@ const GroupModalnew = ({ onClose }) => {
             >
               Save Upload
             </button>
+            <button onClick={onClose}
+                  className="modal-btn-cancel btn-create-group"
+                >
+                  Cancel
+                </button>
           </div>
         </div>
       </div>

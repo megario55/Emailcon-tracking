@@ -10,7 +10,15 @@
     justify-content: center;
     align-items: center;
 }
-
+.modal-create-button-cancel-Instant{
+    background-color:#f48c06;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
 .excel-modal-send-btn:disabled {
     background: #ccc;
     cursor: not-allowed;

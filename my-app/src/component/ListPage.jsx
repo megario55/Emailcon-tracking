@@ -247,7 +247,7 @@ const handleSaveStudent = () => {
             Groups
           </button>
           <button
-            className={`btn ${activeTab === "students" ? "active" : ""}`}
+            className={`btn-contact ${activeTab === "students" ? "active" : ""}`}
             onClick={() => setActiveTab("students")}
           >
             Contacts

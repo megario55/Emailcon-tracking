@@ -885,6 +885,17 @@ button[data-tooltip]:hover::after {
     border-radius: 5px;
     outline: none;
 }
+.modal-create-button-cancel {
+    background:#f48c06;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
 
 .modal-create-button {
     background: #2f327d;
@@ -951,9 +962,9 @@ button[data-tooltip]:hover::after {
     background: #fff;
     border-radius: 10px;
     padding: 20px;
-    width: 500px;
+    width: 600px;
     height: 500px;
-    max-width: 550px;
+    max-width: 650px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
     overflow: auto;

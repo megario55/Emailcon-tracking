@@ -573,6 +573,9 @@ if (!isOpen) return null;
             >
               {isLoadingsch ? "Processing..." : "Scheduled"}
             </button>
+            <button onClick={onClose} className="modal-create-button-cancel-Instant">
+              Cancel
+            </button>
 
       </div>
 <ToastContainer className="custom-toast"

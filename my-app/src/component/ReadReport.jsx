@@ -123,6 +123,14 @@ const handleCloseClickModal = () => {
   const handleEditor = (userId, campaignId) => {
     navigate(`/read-editor/${userId}/${campaignId}`);
   };
+  const handleoverallEditor = (userId, campaignId) => {
+    navigate(`/click-editor/${userId}/${campaignId}`);
+  };
+
+  const handleoverallsingleEditor = (userId, campaignId, emails) => {
+    navigate(`/clicksingle-editor/${userId}/${campaignId}`, { state: { emails} });   
+  };
+  
   const handleBackCampaign = () => {
     navigate("/campaigntable");
   };
@@ -310,10 +318,10 @@ const handleCloseClickModal = () => {
         </thead>
         <tbody>
           {emailClickData.length > 0 ? (
-            emailClickData.map((email, index) => (
+            emailClickData.map((singleemail, index) => (
               <tr key={index}>
-                <td>{email.emailId}</td>
-                <td>{new Date(email.timestamp).toLocaleString()}</td>
+                <td>{singleemail.emailId}</td>
+                <td>{new Date(singleemail.timestamp).toLocaleString()}</td>
               </tr>
             ))
           ) : (
@@ -324,11 +332,14 @@ const handleCloseClickModal = () => {
         </tbody>
       </table>
       <button
-              className="target-modal-read"
-              onClick={() => handleEditor(userId, campaignId)}
-            >
-              Retarget
-            </button>
+  className="target-modal-read"
+  onClick={() =>
+    handleoverallsingleEditor(userId, campaignId, emailClickData.map(singleemail => singleemail.emailId))
+  }
+>
+  Retarget
+</button>
+
       <button className="close-modal-read" onClick={handleCloseClickModal}>x</button>
     </div>
   </div>
@@ -450,7 +461,7 @@ const handleCloseClickModal = () => {
             </table>
             <button
               className="target-modal-read"
-              onClick={() => handleEditor(userId, campaignId)}
+              onClick={() => handleoverallEditor(userId, campaignId)}
             >
               Retarget
             </button>

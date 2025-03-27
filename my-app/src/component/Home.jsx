@@ -354,7 +354,7 @@ const Home = () => {
                 </button>
                 <button
                   onClick={() => setShowCampaignModal(false)}
-                  className="modal-create-button"
+                  className="modal-create-button-cancel-modal"
                 >
                   Cancel
                 </button>

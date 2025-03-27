@@ -29,6 +29,15 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: relative;
 }
+.modal-create-button-cancel-bulk{
+    background-color:#f48c06;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
 
 .send-modal-close-btn {
     position: absolute;
