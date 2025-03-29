@@ -63,7 +63,14 @@ const GroupModalnew = ({ onClose }) => {
         })
         .catch((error) => {
           console.error("Error:", error);
-          toast.error("Failed to create group");
+            // Dismiss previous toasts before showing a new one
+               toast.dismiss();
+          
+               if (error.response && error.response.data && error.response.data.message) {
+                 toast.warning(error.response.data.message, { autoClose: 3000 });
+               } else {
+                 toast.error("Failed to create group", { autoClose: 3000 });
+               }
         });
     } else {
       toast.error("Please ensure all fields are filled and user is valid");

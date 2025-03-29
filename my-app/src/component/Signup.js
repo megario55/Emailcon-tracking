@@ -35,9 +35,25 @@ function Signup() {
       setTimeout(() => {
         navigate("/");
       }, 4000);
-    } catch (error) {
-      toast.error(error.response ? error.response.data : "Error signing up");
     }
+    catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Error signing up";
+    
+        if (error.response.status === 400) {
+          if (errorMessage.includes("User already exists")) {
+            toast.warning("User already exists. Please use a different email or username.");
+          } else {
+            toast.error(errorMessage);
+          }
+        } else {
+          toast.error(errorMessage);
+        }
+      } else {
+        toast.error("Network error. Please try again.");
+      }
+    }
+    
     finally{
           setIsLoading(false); 
 
@@ -193,7 +209,7 @@ function Signup() {
       <ToastContainer
         className="custom-toast"
         position="bottom-center"
-        autoClose={2000}
+        autoClose={3000}
         hideProgressBar={true}
         closeOnClick={false}
         closeButton={false}

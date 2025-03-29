@@ -117,45 +117,50 @@ const Home = () => {
     setShowfileGroupModal(true);
   };
 
-  const handleCreateButton = () => {
+  const handleCreateButton = () => { 
     if (!user || !user.id) {
       toast.error("Please ensure the user is valid");
-      return; // Stop further execution if user is invalid
+      return;
     }
     if (!campaignName) {
       toast.error("Please enter a campaign name");
-      return; // Stop further execution
+      return;
     }
+  
     setIsLoading(true);
   
-    if (campaignName && user && user.id) {
-      axios
-        .post(`${apiConfig.baseURL}/api/stud/campaign`, {
-          camname: campaignName,
-          userId: user.id,
-        })
-        .then((response) => {
-          localStorage.setItem("campaign", JSON.stringify(response.data.campaign));
-          console.log("Campaign created");
-          
-          setIsLoading(false);
-          setShowCampaignModal(false);
-          setCampaignName("");
+    axios
+      .post(`${apiConfig.baseURL}/api/stud/campaign`, {
+        camname: campaignName,  // Ensure the field matches backend
+        userId: user.id,
+      })
+      .then((response) => {
+        localStorage.setItem("campaign", JSON.stringify(response.data.campaign));
+        console.log("Campaign created successfully");
   
-          // Check screen width for navigation
-          if (window.innerWidth <= 768) {
-            navigate("/campaign"); // Mobile
-          } else {
-            navigate("/editor"); // PC
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          toast.error("Failed to create campaign");
-        });
-    } else {
-      toast.error("Please ensure all fields are filled and user is valid");
-    }
+        setIsLoading(false);
+        setShowCampaignModal(false);
+        setCampaignName("");
+  
+        if (window.innerWidth <= 768) {
+          navigate("/campaign"); // Mobile
+        } else {
+          navigate("/editor"); // PC
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error("Error:", error);
+        
+     // Dismiss previous toasts before showing a new one
+     toast.dismiss();
+
+     if (error.response && error.response.data && error.response.data.message) {
+       toast.warning(error.response.data.message, { autoClose: 3000 });
+     } else {
+       toast.error("Failed to create campaign", { autoClose: 3000 });
+     }
+      });
   };
   
   const handlecampaignhistory = () => {

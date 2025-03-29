@@ -3,31 +3,36 @@ import User from '../models/User.js';
 import { encryptPassword } from "../config/encryption.js";
 
 
-export const signup = async (req, res) => {
-  const { email, username, password, smtppassword } = req.body;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true); // Start loading
 
   try {
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email or username." });
-    }
-
-    // Encrypt SMTP password before storing
-    const encryptedSmtpPassword = encryptPassword(smtppassword);
-
-    const user = new User({
+    const response = await axios.post(`${apiConfig.baseURL}/api/auth/signup`, {
       email,
       username,
-      password, // Ideally, hash this as well using bcrypt
-      smtppassword: encryptedSmtpPassword, 
+      password,
+      smtppassword,
     });
 
-    await user.save();
+    toast.success(response.data.message || "Account created successfully!");
 
-    res.status(201).json({ message: "Your details are saved. Wait for account activation." });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error saving user." });
+    setTimeout(() => {
+      navigate("/");
+    }, 4000);
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      const errorMessage = error.response.data.message;
+      if (errorMessage.includes("User already exists")) {
+        toast.info("User already exists. Please use a different email or username.");
+      } else {
+        toast.error(errorMessage);
+      }
+    } else {
+      toast.error(error.response ? error.response.data.message : "Error signing up");
+    }
+  } finally {
+    setIsLoading(false);
   }
 };
 

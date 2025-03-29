@@ -687,8 +687,13 @@ const handleTemplateSelect = (template) => {
         },(2000))
       })
       .catch((error) => {
-        console.error("Error:", error);
-        toast.error("Failed to saved template");
+         // Dismiss previous toasts before showing a new one
+                    toast.dismiss();              
+                    if (error.response && error.response.data && error.response.data.message) {
+                      toast.warning(error.response.data.message, { autoClose: 3000 });
+                    } else {
+                      toast.error("Failed to Save template", { autoClose: 3000 });
+                    }
         setIsLoading(false);
       });
   } else {

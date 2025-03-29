@@ -1147,6 +1147,17 @@ router.post('/groups', async (req, res) => {
   }
 
   try {
+    // Check if the group name already exists for the user
+    const existingGroup = await Group.findOne({
+      name,
+      user: userId
+    });
+    if (existingGroup) {
+      return res.status(400).send({
+        message: "Group name already exists for this user"
+      });
+    }
+    // Create a new group
     const group = new Group({
       name,
       user: userId
@@ -1416,6 +1427,17 @@ router.post('/template', async (req, res) => {
   }
 
   try {
+    // Check if a template with the same name already exists for the user
+    const existingTemplate = await Template.findOne({
+      temname,
+      user: userId
+    });
+    if (existingTemplate) {
+      return res.status(400).send({
+        message: "Template with this name already exists for the user"
+      });
+    }
+    // Create a new template
     const template = new Template({
       temname,
       previewContent,
