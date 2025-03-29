@@ -1353,6 +1353,7 @@ router.put('/groups/:id', (req, res) => {
     .then(updatedGroup => res.json(updatedGroup))
     .catch(err => res.status(400).send(err));
 });
+
 //create campaign
 router.post('/campaign', async (req, res) => {
   const {
@@ -1367,6 +1368,17 @@ router.post('/campaign', async (req, res) => {
   }
 
   try {
+    // Check if a campaign with the same name already exists for the user
+    const existingCampaign = await Campaign.findOne({
+      camname,
+      user: userId
+    });
+    if (existingCampaign) {
+      return res.status(400).send({
+        message: "Campaign with this name already exists for the user"
+      }); 
+    }
+    // Create a new campaign
     const campaign = new Campaign({
       camname,
       user: userId

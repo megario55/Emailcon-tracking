@@ -5,6 +5,8 @@ import apiConfig from "../apiconfig/apiConfig";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./ReadReport.css";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+
 
 const ReadReport = () => {
   const { userId, campaignId } = useParams();
@@ -22,6 +24,24 @@ const [showClickModal, setShowClickModal] = useState(false);
 const [showallClickModal, setShowallClickModal] = useState(false);
 const [showOverallClickModal, setShowOverallClickModal] = useState(false);
 const navigate = useNavigate();
+const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+
+const processDataForGraph = () => {
+  const timeCounts = Array(24).fill(0); // Array to store counts for each hour (0-23)
+
+  emailData.forEach((email) => {
+    const hour = new Date(email.timestamp).getHours(); // Get hour in 24-hour format
+    timeCounts[hour] += 1; // Increase count for that hour
+  });
+
+  return timeCounts.map((count, hour) => {
+    // Convert to 12-hour format with AM/PM
+    const period = hour < 12 ? "AM" : "PM";
+    const formattedHour = hour % 12 === 0 ? 12 : hour % 12; // Convert 0 to 12 for 12AM/PM
+
+    return { hour: `${formattedHour} ${period}`, users: count };
+  });
+};
 
 
 useEffect(() => { 
@@ -417,13 +437,40 @@ const handleCloseClickModal = () => {
                 )}
               </tbody>
             </table>
+            <div className="overall-btn">
+            <button className="overall-modal-read" onClick={() => setShowAnalysisModal(true)}>
+                Retarget Analysis
+              </button>
             <button
-              className="target-modal-read"
+              className="overall-cancel"
               onClick={() => handleEditor(userId, campaignId)}
             >
               Retarget
-            </button>
+            </button>        
+         </div>      
             <button className="close-modal-read" onClick={handleCloseModal}>
+              x
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Retarget Analysis */}
+      {showAnalysisModal && (
+        <div className="modal-overlay-read" onClick={() => setShowAnalysisModal(false)}>
+          <div className="modal-content-read-graph" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-heading-read">Read Retarget Analysis</h2>
+            <ResponsiveContainer width="100%" height={400}>
+  <BarChart data={processDataForGraph()}>
+    <XAxis dataKey="hour" />
+    <YAxis domain={[0, 100]} tickFormatter={(tick) => `${tick}%`} />
+    <Tooltip />
+    <Legend verticalAlign="top" align="right" iconType="circle" />
+    <Bar dataKey="users" fill="#f48c06" name="User Viewed Time" />
+  </BarChart>
+</ResponsiveContainer>
+
+            <button className="close-modal-read" onClick={() => setShowAnalysisModal(false)}>
               x
             </button>
           </div>
@@ -471,8 +518,7 @@ const handleCloseClickModal = () => {
           </div>
         </div>
       )}
-
-    
+  
     </>
   );
 };
