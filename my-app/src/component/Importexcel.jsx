@@ -292,73 +292,66 @@ const handleSend = async () => {
         const campaignId = campaignResponse.data.id; // Assume response includes campaign ID
         console.log("Initial Campaign History Saved:", campaignResponse.data);
 
-        // Process each row and send emails
-for (let index = 0; index < rows.length; index++) {
-  const row = rows[index]; // Get row data
+      // Process all rows and send emails concurrently
+const emailPromises = rows.map(async (row) => {
   const email = row[emailIndex];
-  if (!email) continue; // Skip if email is empty
+  if (!email) return null; // Skip if email is empty
 
-            // Generate personalized content from template
-            const personalizedContent = previewContent.map(item => {
-                const personalizedItem = { ...item }; // Copy the structure
+  // Generate personalized content from template
+  const personalizedContent = previewContent.map(item => {
+      const personalizedItem = { ...item }; // Copy the structure
 
-                if (item.content) {
-                    headers.forEach((header, index) => {
-                        const placeholder = new RegExp(`{?${header.trim()}\\}?`, "g"); // Match placeholders like {Fname}
-                        const cellValue = row[index] ? String(row[index]).trim() : ""; // Convert to string and trim
-                        personalizedItem.content = personalizedItem.content.replace(placeholder, cellValue);
-                    });
-                }
-                return personalizedItem;
-            });
+      if (item.content) {
+          headers.forEach((header, index) => {
+              const placeholder = new RegExp(`{?${header.trim()}\\}?`, "g"); // Match placeholders like {Fname}
+              const cellValue = row[index] ? String(row[index]).trim() : ""; // Convert to string and trim
+              personalizedItem.content = personalizedItem.content.replace(placeholder, cellValue);
+          });
+      }
+      return personalizedItem;
+  });
 
-            const emailData = {
-                recipientEmail: email,
-                subject: message,
-                body: JSON.stringify(personalizedContent),
-                bgColor,
-                previewtext,
-                attachments,
-                aliasName,
-                userId: user.id,
-                campaignId: campaignId,
-            };
+  const emailData = {
+      recipientEmail: email,
+      subject: message,
+      body: JSON.stringify(personalizedContent),
+      bgColor,
+      previewtext,
+      attachments,
+      aliasName,
+      userId: user.id,
+      campaignId: campaignId,
+  };
 
-            try {
-                console.log("Sending email data:", emailData);
-                await axios.post(`${apiConfig.baseURL}/api/stud/sendbulkEmail`, emailData);
-                sentEmails.push(email);
-            } catch (error) {
-                console.error(`Failed to send email to ${email}:`, error);
-                failedEmails.push(email);
-            }
-           // After the email loop ends, calculate the final progress and status
+  try {
+      console.log("Sending email data:", emailData);
+      await axios.post(`${apiConfig.baseURL}/api/stud/sendbulkEmail`, emailData);
+      sentEmails.push(email);
+  } catch (error) {
+      console.error(`Failed to send email to ${email}:`, error);
+      failedEmails.push(email);
+  }
+});
+
+await Promise.all(emailPromises);
+
+// After all emails are processed, calculate the final progress and status
 const totalEmails = rows.filter(row => row[emailIndex]).length; // Count non-empty emails
 const successProgress = Math.round((sentEmails.length / totalEmails) * 100);
 const failProgress = Math.round((failedEmails.length / totalEmails) * 100);
+const finalProgress = failedEmails.length > 0 ? failProgress : successProgress;
 
-// Determine final progress & status
-let finalProgress;
-
-if (failedEmails.length > 0) {
-    finalProgress = failProgress;
-} else {
-    finalProgress = successProgress;
-}
-
-//  Update campaign history with final status and progress
+// Update campaign history with final status and progress
 await axios.put(`${apiConfig.baseURL}/api/stud/camhistory/${campaignId}`, {
-    sendcount: sentEmails.length,
-    sentEmails,
-    failedEmails: failedEmails.length > 0 ? failedEmails : [],
-    failedcount: failedEmails.length,
-    status: "In Progress", // Update status to "In Progress"
-    progress: finalProgress, // Updated progress
+  sendcount: sentEmails.length,
+  sentEmails,
+  failedEmails: failedEmails.length > 0 ? failedEmails : [],
+  failedcount: failedEmails.length,
+  status: "In Progress", // Update status to "In Progress"
+  progress: finalProgress, // Updated progress
 });
 
 console.log(`Final Progress: ${finalProgress}%`);
-
-        }
 
         // Update campaign history with final status
         const finalStatus = failedEmails.length > 0 ? "Failed" : "Success";

@@ -1186,65 +1186,6 @@ router.post("/students/upload", async (req, res) => {
   }
 });
 
-// //add student to db through instant excel upload
-
-// router.post("/students/uploadexcel", async (req, res) => {
-// const {
-//   payload,
-//   userId,
-// } = req.body;
-
-// if (!userId) {
-//   return res.status(400).send({
-//     message: "User ID is required"
-//   });
-// }
-
-// try {
-//   const excelstudent = new ExcelStudent({
-//     payload,
-//     user: userId,
-//   }); // Correct object structure
-//   const savedUpload= await excelstudent.save();
-//     const excelData = {
-//       id: savedUpload._id,
-//     };
-
-//     res.status(201).json({ message: "Students uploaded successfully", excelstudent:excelData });
-//   } catch (error) {
-//     console.error("Error inserting students:", error);
-//     res.status(500).send("Error uploading students");
-//   }
-// });
-
-// //getting students data in uploaded excel
-// router.get("/uploadexcel/:id/students", async (req, res) => {
-//   try {
-//     const {
-//       id
-//     } = req.params;
-
-//     // Fetch students from MongoDB
-//     const students = await ExcelStudent.findById(id);
-
-//     // If no students found, return 404
-//     if (!students){
-//       return res.status(404).json({
-//         message: "Excelstudent not found"
-//       });
-//     }
-
-//     // Send the student data as JSON
-//     res.status(200).json(students);
-//   } catch (error) {
-//     console.error("Error fetching student:", error);
-//     res.status(500).json({
-//       message: "Server error"
-//     });
-//   }
-// });
-
-
 //add manually student to selected group
 router.post("/students/manual", async (req, res) => {
   const student = new Student(req.body);
@@ -1257,7 +1198,6 @@ router.get("/students", async (req, res) => {
   const students = await Student.find().populate("group");
   res.send(students);
 });
-
 
 //getting all groups
 router.get('/groups/:userId', async (req, res) => {

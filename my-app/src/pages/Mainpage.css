@@ -91,6 +91,29 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 input[type="color"]::-webkit-color-swatch {
     border: none;
 }
+input[type="color"] {
+    appearance: none; /* Removes default styles */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 40px; /* Adjust size */
+    height: 40px;
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}
+
+/* Adding a border to make it look more like PC */
+input[type="color"]::-webkit-color-swatch {
+    border-radius: 5px;
+    border: 2px solid #ccc;
+}
+
+input[type="color"]::-moz-color-swatch {
+    border-radius: 5px;
+    border: 2px solid #ccc;
+}
+
 
 .preview-container {
     width: 80%;
@@ -382,15 +405,9 @@ button[data-tooltip]:hover::after {
     margin-bottom: 10px;
 }
 
-.modal-btn:hover {
-    background-color: #99c3c7;
-
-}
-
 /* Styling Controls */
 .style-controls {
     margin-top: 20px;
-
 }
 
 .style-item {

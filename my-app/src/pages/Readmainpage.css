@@ -384,10 +384,7 @@ button[data-tooltip]:hover::after {
     margin-bottom: 10px;
 }
 
-.modal-btn:hover {
-    background-color: #99c3c7;
 
-}
 
 /* Styling Controls */
 .style-controls {

@@ -19,6 +19,7 @@ const GroupModalnew = ({ onClose }) => {
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [isRuleOpen,setIsRuleOpen]=useState("");
   const user = JSON.parse(localStorage.getItem("user"));
+  const [isLoading, setIsLoading] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +48,13 @@ const GroupModalnew = ({ onClose }) => {
       toast.error("Please ensure the user is valid");
       return; // Stop further execution if user is invalid
     }
+    if (!groupName) {
+      toast.error("Group name cannot be empty");
+      return; // Stop further execution if group name is empty
+    }
+
+    // Proceed with group creation
+    setIsLoading(true); // Start loading
     if (groupName && user && user.id) {
       axios
         .post(`${apiConfig.baseURL}/api/stud/groups`, {
@@ -62,6 +70,8 @@ const GroupModalnew = ({ onClose }) => {
           setGroupName("");
         })
         .catch((error) => {
+          setIsLoading(false); // Stop loading
+          // Handle error response
           console.error("Error:", error);
             // Dismiss previous toasts before showing a new one
                toast.dismiss();
@@ -165,8 +175,13 @@ const GroupModalnew = ({ onClose }) => {
     <button
       className="modal-btn btn-create-group"
       onClick={handleGroupCreate}
-    >
-      Create
+      disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <span className="loader-create"></span> // Spinner
+                  ) : (
+                    "Create"
+                  )}{" "}
     </button>
     <button onClick={() => setIsFirstModal(false)}
                   className="modal-btn-cancel btn-create-group"

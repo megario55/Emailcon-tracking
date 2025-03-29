@@ -662,44 +662,46 @@ const handleTemplateSelect = (template) => {
   };
 
   const handleSaveButton = () => {
-  if (!user || !user.id) {
-    toast.error("Please ensure the user is valid");
-    return; // Stop further execution if user is invalid
-  }
-  if (!templateName) {
-    toast.error("Please enter a Template name");
-  }
-  if (!previewContent || previewContent.length === 0) {
-    toast.warning("No preview content available.");
-    return;
-  }
-
-  setIsLoading(true);
-  if (templateName && user && user.id && previewContent) {
-    axios
-      .post(`${apiConfig.baseURL}/api/stud/template`, { temname:templateName, userId: user.id,previewContent,bgColor })
-      .then((response) => {
-        toast.success("Template Saved Successfully");
-        setTimeout(()=>{
-        setShowTemplateModal(false);
-        setTemplateName("");
-        setIsLoading(false);
-        },(2000))
-      })
-      .catch((error) => {
-         // Dismiss previous toasts before showing a new one
-                    toast.dismiss();              
-                    if (error.response && error.response.data && error.response.data.message) {
-                      toast.warning(error.response.data.message, { autoClose: 3000 });
-                    } else {
-                      toast.error("Failed to Save template", { autoClose: 3000 });
-                    }
-        setIsLoading(false);
-      });
-  } else {
-    toast.error("Please ensure all fields are filled and user is valid");
-  }
-};
+    if (!user || !user.id) {
+      toast.error("Please ensure the user is valid");
+      return; // Stop further execution if user is invalid
+    }
+    if (!templateName) {
+      toast.error("Please enter a Template name");
+    }
+    if (!previewContent || previewContent.length === 0) {
+      toast.warning("No preview content available.");
+      return;
+    }
+  
+    setIsLoading(true);
+    if (templateName && user && user.id && previewContent) {
+      axios
+        .post(`${apiConfig.baseURL}/api/stud/template`, { temname:templateName, userId: user.id,previewContent,bgColor })
+        .then((res) => {
+          console.log("Template saved successfully:", res.data);
+          toast.success("Template Saved Successfully");
+          setTimeout(()=>{
+          setShowTemplateModal(false);
+          setTemplateName("");
+          setIsLoading(false);
+          },(2000))
+        })
+        .catch((error) => {
+          setIsLoading(false);
+           // Dismiss previous toasts before showing a new one
+                      toast.dismiss();              
+                      if (error.response && error.response.data && error.response.data.message) {
+                        toast.warning(error.response.data.message, { autoClose: 3000 });
+                      } else {
+                        toast.error("Failed to Save template", { autoClose: 3000 });
+                      }
+        });
+    } else {
+      setIsLoading(false);
+      toast.error("Please ensure all fields are filled and user is valid");
+    }
+  };
 const sendscheduleEmail = async () => {
   if (!previewContent || previewContent.length === 0) {
     toast.warning("No preview content available.");
@@ -841,20 +843,19 @@ const sendscheduleEmail = async () => {
       const campaignId = campaignResponse.data.id;
       console.log("Initial Campaign History Saved:", campaignResponse.data);
   
-      // Start sending emails with DB progress updates
-      for (let i = 0; i < recipients.length; i++) {
-        let email = recipients[i];
-  
+     // Send emails concurrently using Promise.all
+    await Promise.all(
+      recipients.map(async (email, index) => {
         try {
           const response = await axios.post(`${apiConfig.baseURL}/api/stud/sendtestmail`, {
             emailData: { ...emailData, recipient: email },
             previewContent,
             bgColor,
             attachments,
-            campaignId:campaignId,
-            userId: user.id,
+            campaignId,
+            userId: user.id
           });
-  
+
           if (response.status === 200) {
             sentEmails.push(email);
           } else {
@@ -865,7 +866,6 @@ const sendscheduleEmail = async () => {
           console.error(`Error sending email to ${email}:`, err);
           failedEmails.push(email);
         }
-  
         // Update progress dynamically
         const totalEmails = recipients.length;
         const successProgress = Math.round((sentEmails.length / totalEmails) * 100);
@@ -880,11 +880,11 @@ const sendscheduleEmail = async () => {
           failedEmails,
           status: "In Progress",
           progress: currentProgress, // Updated progress calculation
-        });
-  
+        }); 
         console.log(`Progress updated: ${currentProgress}%`);
-      }
-  
+      })
+    );
+
       // Final DB update after sending all emails
       const finalStatus = failedEmails.length > 0 ? "Failed" : "Success";
       await axios.put(`${apiConfig.baseURL}/api/stud/camhistory/${campaignId}`, {

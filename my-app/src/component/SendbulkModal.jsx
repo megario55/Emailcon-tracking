@@ -221,9 +221,8 @@ const handleSend = async () => {
         console.log("Initial Campaign History Saved:", campaignResponse.data);
 
 
-  
-        for (let i = 0; i < students.length; i++) {
-          const student = students[i]; // Get the current student
+        await Promise.all(
+          students.map(async (student) => {
 
         const personalizedContent = previewContent.map((item) => {
         const personalizedItem = { ...item };
@@ -275,8 +274,9 @@ const handleSend = async () => {
     });
 
     console.log(`Progress updated: ${currentProgress}%`);
-      
-    }
+  })
+);
+
 
       // Update campaign history with final status
         const finalStatus = failedEmails.length > 0 ? "Failed" : "Success";
