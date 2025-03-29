@@ -13,6 +13,7 @@ import ReadReport from "../component/ReadReport";
 import Readmainpage from "./Readmainpage";
 import Clickmainpage from "./Clickmainpage";
 import Clicksinglemainpage from "./Clicksinglemainpage";
+import TemMainpage from "./TemMainpage";
 
 function RoutesPage() {
   return (
@@ -29,6 +30,7 @@ function RoutesPage() {
         <Route path="/home" element={<Home />} />
         <Route path="/campaigntable" element={<CampaignTable />} />
         <Route path="/campaign" element={<Campaign/>} />
+        <Route path="/TemMainpage" element={<TemMainpage/>} />
         <Route path="/readreport/:userId/:campaignId" element={<ReadReport />} />
         {/* Wildcard route to handle all other unknown paths */}
         <Route path="*" element={<ErrorPage />} />
