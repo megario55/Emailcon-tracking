@@ -3,45 +3,36 @@ import axios from "axios";
 import apiConfig from "../my-app/src/apiconfig/apiConfig.js";
 import Camhistory from "./models/Camhistory.js";
 import mongoose from "mongoose";
-import { Command } from "commander";
-
-const program = new Command();
-program
-  .option("-s, --schedule", "Run the email scheduler")
-  .parse(process.argv);
 
 const SCHEDULE_INTERVAL = "* * * * *"; // Runs every minute
 
 console.log("Cron job initialized for sending scheduled emails.");
 
-if (program.schedule) {
-  cron.schedule(SCHEDULE_INTERVAL, async () => {
-      try {
-          const nowUTC = new Date();
-          nowUTC.setSeconds(0, 0);
-          const nextMinute = new Date(nowUTC);
-          nextMinute.setMinutes(nextMinute.getMinutes() + 1);
+cron.schedule(SCHEDULE_INTERVAL, async () => {
+    try {
+        const nowUTC = new Date();
+        nowUTC.setSeconds(0, 0);
+        const nextMinute = new Date(nowUTC);
+        nextMinute.setMinutes(nextMinute.getMinutes() + 1);
 
-          console.log("Checking for scheduled emails at:", new Date().toLocaleString());
+        console.log("Checking for scheduled emails at:", new Date().toLocaleString());
 
-          const camhistories = await Camhistory.find({
-              status: "Scheduled On",
-              scheduledTime: { $gte: nowUTC.toISOString(), $lt: nextMinute.toISOString() },
-          }).lean();
+        const camhistories = await Camhistory.find({
+            status: "Scheduled On",
+            scheduledTime: { $gte: nowUTC.toISOString(), $lt: nextMinute.toISOString() },
+        }).lean();
 
-          if (camhistories.length === 0) {
-              console.log("No scheduled emails found.");
-              return;
-          }
+        if (camhistories.length === 0) {
+            console.log("No scheduled emails found.");
+            return;
+        }
 
-          await Promise.all(camhistories.map(processEmailCampaign));
-      } catch (error) {
-          console.error("Error in scheduled email job:", error);
-      }
-  });
-} else {
-  console.log("Use --schedule flag to run the email scheduler.");
-}
+        await Promise.all(camhistories.map(processEmailCampaign));
+    } catch (error) {
+        console.error("Error in scheduled email job:", error);
+    }
+});
+
 /**
  * Processes an email campaign based on conditions.
  */
@@ -49,7 +40,6 @@ async function processEmailCampaign(camhistory) {
     const sentEmails = [];
     const failedEmails = [];
     const groupId = camhistory.groupId?.trim() || "";
-        // Update initial status to "Pending"
 
     await updateCampaignStatus(camhistory._id, "Pending");
 
@@ -60,10 +50,11 @@ async function processEmailCampaign(camhistory) {
     } else if (mongoose.Types.ObjectId.isValid(groupId)) {
         await sendEmailsFromGroup(camhistory, groupId, sentEmails, failedEmails);
     }
-        // Final update after processing
+
     const finalStatus = failedEmails.length > 0 ? "Failed" : "Success";
     await updateCampaignStatus(camhistory._id, finalStatus, sentEmails, failedEmails);
 }
+
 /**
  * Sends emails to individual recipients.
  */
@@ -103,6 +94,7 @@ async function sendEmailsFromExcel(camhistory, sentEmails, failedEmails) {
 
     await updateProgress(camhistory._id, sentEmails, failedEmails, camhistory.exceldata.length);
 }
+
 /**
  * Sends emails using group data.
  */
@@ -127,6 +119,7 @@ async function sendEmailsFromGroup(camhistory, groupId, sentEmails, failedEmails
         console.error("Failed to fetch group data:", error);
     }
 }
+
 /**
  * Replaces placeholders in email content with actual values.
  */
@@ -140,11 +133,10 @@ function personalizeContent(contentArray, data) {
         return { ...item, content: updatedContent };
     });
 }
+
 /**
  * Prepares the email data object for sending.
  */
-
-
 function prepareEmailData(camhistory, recipientEmail, bodyContent) {
     return {
         recipientEmail,
@@ -167,6 +159,7 @@ async function sendEmailRequest(emailData) {
         throw new Error(`Email send request failed: ${error.message}`);
     }
 }
+
 /**
  * Updates the campaign's status and progress in the database.
  */
