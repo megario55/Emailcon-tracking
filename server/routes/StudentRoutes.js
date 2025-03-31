@@ -1649,7 +1649,7 @@ router.get("/track-click", async (req, res) => {
 
   try {
     // Check if a click entry already exists
-    const existingClick = await ClickTracking.findOne({ userId, campaignId, emailId, clickedUrl: url });
+    const existingClick = await ClickTracking.exists({ userId, campaignId, emailId, clickedUrl: url });
 
     if (!existingClick) {
       // Create and save the new click entry
