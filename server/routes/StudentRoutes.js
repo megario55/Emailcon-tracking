@@ -1572,9 +1572,9 @@ router.get("/track-email-open", async (req, res) => {
 
   try {
     // Check if an entry already exists
-    const existingEntry = await EmailOpen.findOne({ emailId, userId, campaignId });
+    const entryExists = await EmailOpen.exists({ emailId, userId, campaignId });
 
-    if (!existingEntry) {
+    if (!entryExists) {
       console.log("📝 Saving new email open entry...");
       const newEntry = new EmailOpen({
         emailId,

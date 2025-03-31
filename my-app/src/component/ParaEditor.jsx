@@ -20,7 +20,22 @@ const ParaEditor = ({ isOpen, content, onSave, onClose }) => {
   const [groups, setGroups] = useState([]); // Stores group names
   const [students, setStudents] = useState([]); // Stores all students
   const user = JSON.parse(localStorage.getItem("user"));
+  const dropdownRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setSelectedGroup(""); // Close dropdown
+        setFieldNames([]);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  
 useEffect(() => {
   if (!user?.id) return;
 
@@ -41,15 +56,15 @@ useEffect(() => {
 
 const handleGroupChange = (e) => {
   const groupName = e.target.value;
-  setSelectedGroup(groupName);
+  
+  // Force the dropdown to open every time by resetting selectedGroup
+  setSelectedGroup("");
+  setTimeout(() => setSelectedGroup(groupName), 0);
 
   if (!students || students.length === 0) {
     console.log("No students available yet.");
     return;
   }
-
-  console.log(`All students:`, students);
-  console.log(`Selected Group for Heading `, groupName);
 
   const filteredStudents = students.filter(
     (student) => student.group && student.group._id === groupName
@@ -65,7 +80,6 @@ const handleGroupChange = (e) => {
 
   setFieldNames(newFieldNames);
 };
-
 
   const editorRef = useRef(null);
 
@@ -133,11 +147,11 @@ const handleGroupChange = (e) => {
         <div className="button-group">
           <button className="para-btn" onClick={() => onSave(editorContent)}>Save</button>
           <button className="para-btn" onClick={onClose}>Cancel</button>
-          <div className="select-group-container">
+          <div className="select-group-container" ref={dropdownRef}>
       {/* Select Group */}
       <select
         onChange={(e) => handleGroupChange(e)}
-        defaultValue=""
+        value=""
         className="select-variable-para"
       >
         <option value="" disabled className="template-title">

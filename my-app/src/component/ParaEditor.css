@@ -14,7 +14,7 @@
 .dropdown-container {
   position: absolute;
   left: 5px; /* Position the dropdown to the left */
-  top: -170px;
+  top: -220px !important;
   background: #fff;
   border: 1px solid #ccc;
   padding: 10px;
@@ -201,10 +201,11 @@
     border: none;
     padding: 10px;
     cursor: pointer;
+    height: 40px;
     border-radius: 5px;
     font-size: 16px;
     margin-right: 10px;
-    margin-bottom: 10px;
+    margin-top: 5px;
 }
 .select-variable-para{
     width:180px;
@@ -222,7 +223,7 @@
 
 @media (max-width:600px){
     .modal-content-para{
-        width:85%;
+        width:85% !important;
     }
     .select-variable-para{
       width:120px;

@@ -1,6 +1,22 @@
 .app-container {
     display: flex;
 }
+.tab-container-style {
+    display: flex;
+  }
+  .tab-style {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    background: #f5f5f5;
+  }
+  .tab-style.active {
+    color: #2f327D;
+    border-bottom: 5px solid #2f327D;
+
+  }
 
 .editor {
     height: 100vh;
