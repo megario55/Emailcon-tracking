@@ -1,6 +1,6 @@
 // src/apiConfig.js
 const apiConfig = {
-    baseURL:"https://emailcon-tracking.onrender.com",
+    baseURL:"https://emailcon-campaign-backend-u45r.onrender.com",
     //baseURL:"http://localhost:8000",
 };
 
