@@ -26,6 +26,7 @@ import SendbulkModal from "../component/SendbulkModal.jsx";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../apiconfig/apiConfig.js";
+import ColorPicker from "./ColorPicker.jsx";
 
 const Mainpage = () => {
   const [activeTab, setActiveTab] = useState("button1");
@@ -1385,44 +1386,20 @@ const sendscheduleEmail = async () => {
                               {previewContent[selectedIndex].type ===
                                 "para" && (
                                 <>
-                                  <div className="editor-bg">
-                                    Text Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .color
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            color: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="editor-bg">
-                                    Text Background
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+                  <ColorPicker
+        label="Text Color"
+        objectKey="style.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+      <ColorPicker 
+        label="Text Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                 </>
                               )}
                               {previewContent[selectedIndex].type === "multipleimage" && (
@@ -1432,43 +1409,21 @@ const sendscheduleEmail = async () => {
                               )}
 {previewContent[selectedIndex].type === "cardimage" && (
                           <>
+                           <ColorPicker
+        label="Text Color"
+        objectKey="style1.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+      <ColorPicker 
+        label="Text Background"
+        objectKey="style1.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                            
-                            <div className="editor-bg">
-                              Background Color
-                              <input
-                                type="color"
-                                value={
-                                  previewContent[selectedIndex].style1
-                                    .backgroundColor || "#ffffff"
-                                }
-                                onChange={(e) =>
-                                  updateContent(selectedIndex, {
-                                    style1: {
-                                      ...previewContent[selectedIndex].style1,
-                                      backgroundColor: e.target.value,
-                                    },
-                                  })
-                                }
-                              />
-                            </div>
-                            <div className="editor-bg">
-                              Text Color
-                              <input
-                                type="color"
-                                value={
-                                  previewContent[selectedIndex].style1.color ||
-                                  "#ffffff"
-                                }
-                                onChange={(e) =>
-                                  updateContent(selectedIndex, {
-                                    style1: {
-                                      ...previewContent[selectedIndex].style1,
-                                      color: e.target.value,
-                                    },
-                                  })
-                                }
-                              />
-                            </div>
                           </>
                         )}
 
@@ -1494,44 +1449,20 @@ const sendscheduleEmail = async () => {
                                       })
                                     }
                                   />
-                                  <div className="editor-bg">
-                                    Text Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .color
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            color: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="editor-bg">
-                                    Text Background
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+                                 <ColorPicker
+        label="Text Color"
+        objectKey="style.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+      <ColorPicker 
+        label="Text Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                   <label>Text Alignment:</label>
                                   <select
                                     value={
@@ -1571,44 +1502,20 @@ const sendscheduleEmail = async () => {
                                       })
                                     }
                                   />
-                                  <div className="editor-bg">
-                                    Background Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="editor-bg">
-                                    Text Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .color
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            color: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+                                <ColorPicker
+        label="Text Color"
+        objectKey="style.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+      <ColorPicker 
+        label="Text Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                   <label>Text Alignment:</label>
                                   <select
                                     value={
@@ -1745,45 +1652,20 @@ const sendscheduleEmail = async () => {
                                         })
                                       }
                                     />
-                                    <div className="editor-bg">
-                                      Button Text Color:
-                                      <input
-                                        type="color"
-                                        value={
-                                          previewContent[selectedIndex]
-                                            .buttonStyle1.color
-                                        }
-                                        onChange={(e) =>
-                                          updateContent(selectedIndex, {
-                                            buttonStyle1: {
-                                              ...previewContent[selectedIndex]
-                                                .buttonStyle1,
-                                              color: e.target.value,
-                                            },
-                                          })
-                                        }
-                                      />
-                                    </div>
-                                    <div className="editor-bg">
-                                      Button Background Color:
-                                      <input
-                                        type="color"
-                                        value={
-                                          previewContent[selectedIndex]
-                                            .buttonStyle1.backgroundColor
-                                        }
-                                        onChange={(e) =>
-                                          updateContent(selectedIndex, {
-                                            buttonStyle1: {
-                                              ...previewContent[selectedIndex]
-                                                .buttonStyle1,
-                                              backgroundColor: e.target.value,
-                                            },
-                                          })
-                                        }
-                                      />
-                                    </div>
-
+                                    <ColorPicker
+        label="Button Text Color"
+        objectKey="buttonStyle1.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+      <ColorPicker 
+        label="Button Text Background"
+        objectKey="buttonStyle1.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                     <label>Text Alignment:</label>
                                     <select
                                       value={
@@ -1903,45 +1785,20 @@ const sendscheduleEmail = async () => {
                                       }
                                     />
 
-                                    <div className="editor-bg">
-                                      Button Text Color:
-                                      <input
-                                        type="color"
-                                        value={
-                                          previewContent[selectedIndex]
-                                            .buttonStyle2.color
-                                        }
-                                        onChange={(e) =>
-                                          updateContent(selectedIndex, {
-                                            buttonStyle2: {
-                                              ...previewContent[selectedIndex]
-                                                .buttonStyle2,
-                                              color: e.target.value,
-                                            },
-                                          })
-                                        }
-                                      />
-                                    </div>
-
-                                    <div className="editor-bg">
-                                      Button Background Color:
-                                      <input
-                                        type="color"
-                                        value={
-                                          previewContent[selectedIndex]
-                                            .buttonStyle2.backgroundColor
-                                        }
-                                        onChange={(e) =>
-                                          updateContent(selectedIndex, {
-                                            buttonStyle2: {
-                                              ...previewContent[selectedIndex]
-                                                .buttonStyle2,
-                                              backgroundColor: e.target.value,
-                                            },
-                                          })
-                                        }
-                                      />
-                                    </div>
+<ColorPicker
+        label="Button Text Color"
+        objectKey="buttonStyle2.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+              <ColorPicker
+        label="Button Text Background"
+        objectKey="buttonStyle2.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
 
                                     <label>Text Alignment:</label>
                                     <select
@@ -2040,26 +1897,14 @@ const sendscheduleEmail = async () => {
                               {previewContent[selectedIndex]?.type ===
                                 "icons" && (
                                 <>
-                                  <div className="editor-bg">
-                                    Background Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex]
-                                          ?.ContentStyle?.backgroundColor ||
-                                        "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          ContentStyle: {
-                                            ...previewContent[selectedIndex]
-                                              .ContentStyle,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+        
+              <ColorPicker
+        label="Background Color"
+        objectKey="ContentStyle.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                   <label>Link1:</label>
                                   <input
                                     type="text"
@@ -2152,25 +1997,13 @@ const sendscheduleEmail = async () => {
                                     %
                                   </span>
 
-                                  <div className="editor-bg">
-                                    Image Background
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+                                  <ColorPicker
+        label="Image Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
 
                                   <label>Link:</label>
                                   <input
@@ -2244,114 +2077,54 @@ const sendscheduleEmail = async () => {
                                       })
                                     }
                                   />
-
-                                  <div className="editor-bg">
-                                    Image Background
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+              <ColorPicker
+        label="Image Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+                                 
                                 </>
                               )}
 
                               {previewContent[selectedIndex].type ===
                                 "textwithimage" && (
                                 <>
-                                  <div className="editor-bg">
-                                    Background Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="editor-bg">
-                                    Text Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .color || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            color: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+                                 <ColorPicker
+        label="Text Color"
+        objectKey="style.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+              <ColorPicker
+        label="Text Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                 </>
                               )}
 
                               {previewContent[selectedIndex].type ===
                                 "imagewithtext" && (
                                 <>
-                                  <div className="editor-bg">
-                                    Background Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style1
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style1: {
-                                            ...previewContent[selectedIndex]
-                                              .style1,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="editor-bg">
-                                    Text Color
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style1
-                                          .color || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style1: {
-                                            ...previewContent[selectedIndex]
-                                              .style1,
-                                            color: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+                                 <ColorPicker
+        label="Text Color"
+        objectKey="style1.color"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+              <ColorPicker
+        label="Text Background"
+        objectKey="style1.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
                                 </>
                               )}
 
@@ -2375,7 +2148,6 @@ const sendscheduleEmail = async () => {
                                           ...previewContent[selectedIndex]
                                             .style,
                                           width: `${newSize}%`,
-                                          // height: `${newSize}px`, // Adjusting height based on size percentage
                                         },
                                       });
                                     }}
@@ -2438,26 +2210,15 @@ const sendscheduleEmail = async () => {
                                     )}
                                     %
                                   </span>
-
-                                  <div className="editor-bg">
-                                    Image Background
-                                    <input
-                                      type="color"
-                                      value={
-                                        previewContent[selectedIndex].style
-                                          .backgroundColor || "#ffffff"
-                                      }
-                                      onChange={(e) =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            backgroundColor: e.target.value,
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
+       
+              <ColorPicker
+        label="Image Background"
+        objectKey="style.backgroundColor"
+        previewContent={previewContent}
+        selectedIndex={selectedIndex}
+        updateContent={updateContent}
+      />
+                                 
                                 </>
                               )}
                             </div>

@@ -5,14 +5,12 @@ import "./AdminLogin.css"; // Import the CSS file
 // import { FaEnvelope, FaLock } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import adminimg from "../Images/signup-img.png"
-
+import adminimg from "../Images/signup-img.png";
 
 function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,8 +28,12 @@ function AdminLogin() {
       <div className="admin-cover">
         <div className="admin-aside">
           {/* <AiFillMail style={{ color: "white", fontSize: "90px" }} /> */}
-           <img src={adminimg} alt="Sample Excel Format" className="signup-image" />
-          <h2 style={{fontWeight:"550", color:"#2f327d"}}>
+          <img
+            src={adminimg}
+            alt="Sample Excel Format"
+            className="signup-image"
+          />
+          <h2 style={{ fontWeight: "550", color: "#2f327d" }}>
             Admin <span style={{ color: "#f48c06" }}> Access</span>
           </h2>
           <p

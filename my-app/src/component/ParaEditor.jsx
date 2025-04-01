@@ -1,4 +1,4 @@
-import React, { useState, useRef ,useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import apiConfig from "../apiconfig/apiConfig.js";
 import { motion } from "framer-motion";
@@ -29,57 +29,62 @@ const ParaEditor = ({ isOpen, content, onSave, onClose }) => {
         setFieldNames([]);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
-useEffect(() => {
-  if (!user?.id) return;
 
-  const fetchGroupsAndStudents = async () => {
-    try {
-      const groupsResponse = await axios.get(`${apiConfig.baseURL}/api/stud/groups/${user.id}`);
-      setGroups(groupsResponse.data);
+  useEffect(() => {
+    if (!user?.id) return;
 
-      const studentsResponse = await axios.get(`${apiConfig.baseURL}/api/stud/students`);
-      setStudents(studentsResponse.data);
-    } catch (err) {
-      console.log("Error fetching data:", err);
+    const fetchGroupsAndStudents = async () => {
+      try {
+        const groupsResponse = await axios.get(
+          `${apiConfig.baseURL}/api/stud/groups/${user.id}`
+        );
+        setGroups(groupsResponse.data);
+
+        const studentsResponse = await axios.get(
+          `${apiConfig.baseURL}/api/stud/students`
+        );
+        setStudents(studentsResponse.data);
+      } catch (err) {
+        console.log("Error fetching data:", err);
+      }
+    };
+
+    fetchGroupsAndStudents();
+  }, [user.id]);
+
+  const handleGroupChange = (e) => {
+    const groupName = e.target.value;
+
+    // Force the dropdown to open every time by resetting selectedGroup
+    setSelectedGroup("");
+    setTimeout(() => setSelectedGroup(groupName), 0);
+
+    if (!students || students.length === 0) {
+      console.log("No students available yet.");
+      return;
     }
+
+    const filteredStudents = students.filter(
+      (student) => student.group && student.group._id === groupName
+    );
+
+    const sampleStudent =
+      filteredStudents.length > 0 ? filteredStudents[0] : null;
+
+    const newFieldNames = sampleStudent
+      ? Object.keys(sampleStudent).filter(
+          (key) => key !== "_id" && key !== "group" && key !== "__v"
+        )
+      : [];
+
+    setFieldNames(newFieldNames);
   };
-
-  fetchGroupsAndStudents();
-}, [user.id]); 
-
-const handleGroupChange = (e) => {
-  const groupName = e.target.value;
-  
-  // Force the dropdown to open every time by resetting selectedGroup
-  setSelectedGroup("");
-  setTimeout(() => setSelectedGroup(groupName), 0);
-
-  if (!students || students.length === 0) {
-    console.log("No students available yet.");
-    return;
-  }
-
-  const filteredStudents = students.filter(
-    (student) => student.group && student.group._id === groupName
-  );
-
-  const sampleStudent = filteredStudents.length > 0 ? filteredStudents[0] : null;
-
-  const newFieldNames = sampleStudent
-    ? Object.keys(sampleStudent).filter(
-        (key) => key !== "_id" && key !== "group" && key !== "__v"
-      )
-    : [];
-
-  setFieldNames(newFieldNames);
-};
 
   const editorRef = useRef(null);
 
@@ -96,11 +101,14 @@ const handleGroupChange = (e) => {
     setSelectedGroup(false);
   };
 
- const handleCopyResponse = () => {
-    navigator.clipboard.writeText(aiResponse).then(() => {
-      setTooltipVisible(true);
-      setTimeout(() => setTooltipVisible(false), 2000);
-    }).catch((err) => console.error("Copy failed", err));
+  const handleCopyResponse = () => {
+    navigator.clipboard
+      .writeText(aiResponse)
+      .then(() => {
+        setTooltipVisible(true);
+        setTimeout(() => setTooltipVisible(false), 2000);
+      })
+      .catch((err) => console.error("Copy failed", err));
   };
 
   const handleGenerateAIContent = async () => {
@@ -145,56 +153,60 @@ const handleGroupChange = (e) => {
         />
 
         <div className="button-group">
-          <button className="para-btn" onClick={() => onSave(editorContent)}>Save</button>
-          <button className="para-btn" onClick={onClose}>Cancel</button>
+          <button className="para-btn" onClick={() => onSave(editorContent)}>
+            Save
+          </button>
+          <button className="para-btn" onClick={onClose}>
+            Cancel
+          </button>
           <div className="select-group-container" ref={dropdownRef}>
-      {/* Select Group */}
-      <select
-        onChange={(e) => handleGroupChange(e)}
-        value=""
-        className="select-variable-para"
-      >
-        <option value="" disabled className="template-title">
-          Add Variable
-        </option>
-        <option value="" disabled>
-          Select Group
-        </option>
-        {groups.map((group, idx) => (
-          <option key={idx} value={group._id}>
-            {group.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Show fields only for the selected heading */}
-      {selectedGroup && (
-        <div className="dropdown-container">
-          <p className="template-title">
-            <span>Add</span> Variable
-          </p>
-          {fieldNames && fieldNames.length > 0 ? (
-            <div>
-              {fieldNames.map((field, idx) => (
-                <div
-                  className="list-field"
-                  key={idx}
-                  onClick={() => handleInsertVariable(`{${field}}`)} // Correct index
-                >
-                  {field}
-                </div>
+            {/* Select Group */}
+            <select
+              onChange={(e) => handleGroupChange(e)}
+              value=""
+              className="select-variable-para"
+            >
+              <option value="" disabled className="template-title">
+                Add Variable
+              </option>
+              <option value="" disabled>
+                Select Group
+              </option>
+              {groups.map((group, idx) => (
+                <option key={idx} value={group._id}>
+                  {group.name}
+                </option>
               ))}
-            </div>
-          ) : (
-            <p className="no-variables">No Variables</p>
-          )}
-        </div>
-      )}
-    </div>
+            </select>
 
-      <p className="ai-btn" onClick={handleOpenChatbot}>
-           <img src={aiicon} alt="Gemini AI" className="gemini-icon" />
-      </p>
+            {/* Show fields only for the selected heading */}
+            {selectedGroup && (
+              <div className="dropdown-container">
+                <p className="template-title">
+                  <span>Add</span> Variable
+                </p>
+                {fieldNames && fieldNames.length > 0 ? (
+                  <div>
+                    {fieldNames.map((field, idx) => (
+                      <div
+                        className="list-field"
+                        key={idx}
+                        onClick={() => handleInsertVariable(`{${field}}`)} // Correct index
+                      >
+                        {field}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-variables">No Variables</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          <p className="ai-btn" onClick={handleOpenChatbot}>
+            <img src={aiicon} alt="Gemini AI" className="gemini-icon" />
+          </p>
         </div>
 
         {/* Animated AI Chatbot */}
@@ -219,7 +231,10 @@ const handleGroupChange = (e) => {
             </div>
 
             <div className="chatbot-body">
-              <div className="chatbot-response" style={{ maxHeight: "150px", overflowY: "auto" }}>
+              <div
+                className="chatbot-response"
+                style={{ maxHeight: "150px", overflowY: "auto" }}
+              >
                 {aiResponse && (
                   <>
                     <div className="copy-container">
@@ -231,7 +246,9 @@ const handleGroupChange = (e) => {
                       >
                         <Clipboard /> Copy
                       </motion.button>
-                      {tooltipVisible && <span className="tooltip">Copied!</span>}
+                      {tooltipVisible && (
+                        <span className="tooltip">Copied!</span>
+                      )}
                     </div>
                     <pre>{aiResponse}</pre>
                   </>
@@ -245,7 +262,7 @@ const handleGroupChange = (e) => {
                 value={aiInput}
                 onChange={(e) => setAiInput(e.target.value)}
               />
-              
+
               {/* Animated Send Button */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -254,7 +271,11 @@ const handleGroupChange = (e) => {
                 onClick={handleGenerateAIContent}
                 disabled={isLoading}
               >
-                {isLoading ? <Loader2 className="spinner animate-spin" /> : <Send />}
+                {isLoading ? (
+                  <Loader2 className="spinner animate-spin" />
+                ) : (
+                  <Send />
+                )}
               </motion.button>
             </div>
           </motion.div>

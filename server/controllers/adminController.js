@@ -1,28 +1,27 @@
 import User from "../models/User.js";
-import transporter from '../config/nodemailer.js';
+import transporter from "../config/nodemailer.js";
 export const getUsers = async (req, res) => {
-    const users = await User.find({});
-    res.json(users);
+  const users = await User.find({});
+  res.json(users);
 };
 
 export const updateStatus = async (req, res) => {
-    const {
-        id,
-        status
-    } = req.body;
-    const user = await User.findByIdAndUpdate(
-        id, {
-            isActive: status
-        }, {
-            new: true
-        }
-    );
+  const { id, status } = req.body;
+  const user = await User.findByIdAndUpdate(
+    id,
+    {
+      isActive: status,
+    },
+    {
+      new: true,
+    }
+  );
 
-    const mailOptions = {
-        from: `"Emailcon Support" <emailcon.01012000@gmail.com>`,
-        to: user.email,
-        subject: `Account ${status ? "Activated" : "Deactivated"}`,
-        html: `
+  const mailOptions = {
+    from: `"Emailcon Support" <emailcon.01012000@gmail.com>`,
+    to: user.email,
+    subject: `Account ${status ? "Activated" : "Deactivated"}`,
+    html: `
         <html>
         <head>
             <meta charset="UTF-8">
@@ -42,11 +41,21 @@ export const updateStatus = async (req, res) => {
                             </tr>
                             <tr>
                                 <td align="center" style="padding:20px;">
-                                    <p style="margin:10px 0; font-size:16px;">Hello <strong>${user.username}</strong>,</p>
+                                    <p style="margin:10px 0; font-size:16px;">Hello <strong>${
+                                      user.username
+                                    }</strong>,</p>
                                     <p style="margin:10px 0; font-size:16px;">Your account status has changed.</p>
-                                    <h3 style="color:${status ? '#28a745' : '#dc3545'};">Your account has been ${status ? "activated" : "deactivated"}.</h3>
+                                    <h3 style="color:${
+                                      status ? "#28a745" : "#dc3545"
+                                    };">Your account has been ${
+      status ? "activated" : "deactivated"
+    }.</h3>
                                     <p style="margin:10px 0; font-size:14px;">
-                                        You can ${status ? "now access your services" : "contact admin for more details"}.
+                                        You can ${
+                                          status
+                                            ? "now access your services"
+                                            : "contact admin for more details"
+                                        }.
                                     </p>
                                 </td>
                             </tr>
@@ -64,10 +73,10 @@ export const updateStatus = async (req, res) => {
             </table>
         </body>
         </html>`,
-    };
+  };
 
-    transporter.sendMail(mailOptions, (error) => {
-        if (error) return res.status(500).send("Email failed to send.");
-        res.send(`Account ${status ? "activated" : "deactivated"} successfully.`);
-    });
+  transporter.sendMail(mailOptions, (error) => {
+    if (error) return res.status(500).send("Email failed to send.");
+    res.send(`Account ${status ? "activated" : "deactivated"} successfully.`);
+  });
 };

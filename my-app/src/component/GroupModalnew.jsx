@@ -17,9 +17,9 @@ const GroupModalnew = ({ onClose }) => {
   const [fileName, setFileName] = useState("");
   const [isFirstModal, setIsFirstModal] = useState(true);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-  const [isRuleOpen,setIsRuleOpen]=useState("");
+  const [isRuleOpen, setIsRuleOpen] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,14 +73,18 @@ const GroupModalnew = ({ onClose }) => {
           setIsLoading(false); // Stop loading
           // Handle error response
           console.error("Error:", error);
-            // Dismiss previous toasts before showing a new one
-               toast.dismiss();
-          
-               if (error.response && error.response.data && error.response.data.message) {
-                 toast.warning(error.response.data.message, { autoClose: 3000 });
-               } else {
-                 toast.error("Failed to create group", { autoClose: 3000 });
-               }
+          // Dismiss previous toasts before showing a new one
+          toast.dismiss();
+
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            toast.warning(error.response.data.message, { autoClose: 3000 });
+          } else {
+            toast.error("Failed to create group", { autoClose: 3000 });
+          }
         });
     } else {
       toast.error("Please ensure all fields are filled and user is valid");
@@ -104,10 +108,13 @@ const GroupModalnew = ({ onClose }) => {
       const formattedData = jsonData
         .map((row, rowIndex) =>
           row.map((cell, colIndex) => {
-            if (rowIndex > 0) { // Avoid modifying headers
+            if (rowIndex > 0) {
+              // Avoid modifying headers
               const header = headers[colIndex]?.toLowerCase(); // Normalize headers
               if (header.includes("date") && typeof cell === "number") {
-                const jsDate = new Date(Math.round((cell - 25569) * 86400 * 1000));
+                const jsDate = new Date(
+                  Math.round((cell - 25569) * 86400 * 1000)
+                );
                 return jsDate.toISOString().split("T")[0]; // Convert only if column is a date
               }
             }
@@ -145,7 +152,7 @@ const GroupModalnew = ({ onClose }) => {
           toast.success("Uploaded data saved successfully");
           setUploadedData([]); // Clear data after saving
           setFileName(""); // Clear file name
-         
+
           if (fileInputRef.current) {
             fileInputRef.current.value = ""; // Reset file input
           }
@@ -161,185 +168,198 @@ const GroupModalnew = ({ onClose }) => {
 
   return (
     <>
-    {isFirstModal && (
-         <div className="group-modal-overlay">
-              <div className="group-modal-content">
-    <h2 className="modal-title">Create New Group</h2>
-    <label className="modal-label">Group Name</label>
-    <input
-      type="text"
-      value={groupName}
-      onChange={(e) => setGroupName(e.target.value)}
-      className="modal-input modal-group-name-input"
-    />
-    <button
-      className="modal-btn btn-create-group"
-      onClick={handleGroupCreate}
-      disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="loader-create"></span> // Spinner
-                  ) : (
-                    "Create"
-                  )}{" "}
-    </button>
-    <button onClick={() => setIsFirstModal(false)}
-                  className="modal-btn-cancel btn-create-group"
-                >
-                  Cancel
-                </button>
-                </div>
-  </div>)}
-
-  {isSecondModalOpen &&(
-    <div className="modal-overlay">
-      <div className="modal-group">
-        <button className="modal-close-btn" onClick={onClose}>
-          &times;
-        </button>
-        <div className="modal-content">
-          <div className="excel-uploader">
-            <h3 className="modal-section-title">Add Contact</h3>
-            <select
-              value={selectedGroupForUpload || ""}
-              onChange={(e) => setSelectedGroupForUpload(e.target.value)}
-              className="modal-select modal-group-select"
+      {isFirstModal && (
+        <div className="group-modal-overlay">
+          <div className="group-modal-content">
+            <h2 className="modal-title">Create New Group</h2>
+            <label className="modal-label">Group Name</label>
+            <input
+              type="text"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              className="modal-input modal-group-name-input"
+            />
+            <button
+              className="modal-btn btn-create-group"
+              onClick={handleGroupCreate}
+              disabled={isLoading}
             >
-              <option value="" disabled>
-                Select Group
-              </option>
-              {groups.map((group) => (
-                <option key={group._id} value={group._id}>
-                  {group.name}
-                </option>
-              ))}
-            </select>
-            <div className="excel-modal-body">
-              <h4>Sample excel format 
-                 <FaInfoCircle
-                                  className="info-icon-rule"
-                 onClick={() => {
-                    console.log("Info icon clicked!");
-                    setIsRuleOpen(true);
-                  }}
-                                  style={{ cursor: "pointer", marginLeft: "5px" }}
-                  />
-              </h4>
-              <img
-                src={sampleexcels}
-                alt="Sample Excel Format"
-                className="sample-excel-image"
-              />
-              <div style={{ display: "flex", gap: "10px" }}>
-                <a href="/file/democsvfile.csv" download>
-                  <button className="modal-btn btn-download-sample">
-                    Download Sample csv File
-                  </button>
-                </a>
-                <a href="/file/demoexcelfile.xlsx" download>
-                  <button className="modal-btn btn-download-sample">
-                    Download Sample xlsx File
-                  </button>
-                  
-                </a>
-                
-              </div>
-
- {/* Modal */}
- {isRuleOpen && (
-        <div className="rule-modal-overlay">
-          <div className="rule-modal-container">
-          <h3>Steps to Upload a File</h3>
-<ol>
-  <li>The First Name, Last Name, and Email fields are mandatory.</li>
-  <li>All other fields are optional. You can create custom fields based on your requirements.</li>
-</ol>
-
-            <button onClick={() => setIsRuleOpen(false)} className="rule-close-button">
-              Close
+              {isLoading ? (
+                <span className="loader-create"></span> // Spinner
+              ) : (
+                "Create"
+              )}{" "}
+            </button>
+            <button
+              onClick={() => setIsFirstModal(false)}
+              className="modal-btn-cancel btn-create-group"
+            >
+              Cancel
             </button>
           </div>
         </div>
       )}
-              <h4>Upload excel file
-              <FaInfoCircle
-                                  className="info-icon-rule"
-                 onClick={() => {
-                    console.log("Info icon clicked!");
-                    setIsRuleOpen(true);
-                  }}
-                                  style={{ cursor: "pointer", marginLeft: "5px" }}
-                  />
-              </h4>
-              <input
-                type="file"
-                accept=".xlsx, .xls .csv"
-                ref={fileInputRef} // Attach the reference to the file input
-                onChange={handleFileUpload}
-              />
-              {fileName && <p>Uploaded File: {fileName}</p>}
-              {uploadedData.length > 0 && (
-                <button
-                  className="excel-modal-view-btn"
-                  onClick={() =>
-                    document
-                      .getElementById("excel-table")
-                      .scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  Uploaded List
-                </button>
-              )}
-            </div>
-            {uploadedData.length > 0 && (
-              <div className="excel-table-container">
-                <table id="excel-table">
-                  <thead>
-                    <tr>
-                      {uploadedData[0].map((header, index) => (
-                        <th key={index}>{header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {uploadedData.slice(1).map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {row.map((cell, cellIndex) => (
-                          <td key={cellIndex}>{cell}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            <button
-              className="modal-btn btn-save-uploaded-data"
-              onClick={handleSaveUploadedData}
-            >
-              Save Upload
+
+      {isSecondModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-group">
+            <button className="modal-close-btn" onClick={onClose}>
+              &times;
             </button>
-            <button onClick={onClose}
+            <div className="modal-content">
+              <div className="excel-uploader">
+                <h3 className="modal-section-title">Add Contact</h3>
+                <select
+                  value={selectedGroupForUpload || ""}
+                  onChange={(e) => setSelectedGroupForUpload(e.target.value)}
+                  className="modal-select modal-group-select"
+                >
+                  <option value="" disabled>
+                    Select Group
+                  </option>
+                  {groups.map((group) => (
+                    <option key={group._id} value={group._id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="excel-modal-body">
+                  <h4>
+                    Sample excel format
+                    <FaInfoCircle
+                      className="info-icon-rule"
+                      onClick={() => {
+                        console.log("Info icon clicked!");
+                        setIsRuleOpen(true);
+                      }}
+                      style={{ cursor: "pointer", marginLeft: "5px" }}
+                    />
+                  </h4>
+                  <img
+                    src={sampleexcels}
+                    alt="Sample Excel Format"
+                    className="sample-excel-image"
+                  />
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <a href="/file/democsvfile.csv" download>
+                      <button className="modal-btn btn-download-sample">
+                        Download Sample csv File
+                      </button>
+                    </a>
+                    <a href="/file/demoexcelfile.xlsx" download>
+                      <button className="modal-btn btn-download-sample">
+                        Download Sample xlsx File
+                      </button>
+                    </a>
+                  </div>
+
+                  {/* Modal */}
+                  {isRuleOpen && (
+                    <div className="rule-modal-overlay">
+                      <div className="rule-modal-container">
+                        <h3>Steps to Upload a File</h3>
+                        <ol>
+                          <li>
+                            The First Name, Last Name, and Email fields are
+                            mandatory.
+                          </li>
+                          <li>
+                            All other fields are optional. You can create custom
+                            fields based on your requirements.
+                          </li>
+                        </ol>
+
+                        <button
+                          onClick={() => setIsRuleOpen(false)}
+                          className="rule-close-button"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <h4>
+                    Upload excel file
+                    <FaInfoCircle
+                      className="info-icon-rule"
+                      onClick={() => {
+                        console.log("Info icon clicked!");
+                        setIsRuleOpen(true);
+                      }}
+                      style={{ cursor: "pointer", marginLeft: "5px" }}
+                    />
+                  </h4>
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls .csv"
+                    ref={fileInputRef} // Attach the reference to the file input
+                    onChange={handleFileUpload}
+                  />
+                  {fileName && <p>Uploaded File: {fileName}</p>}
+                  {uploadedData.length > 0 && (
+                    <button
+                      className="excel-modal-view-btn"
+                      onClick={() =>
+                        document
+                          .getElementById("excel-table")
+                          .scrollIntoView({ behavior: "smooth" })
+                      }
+                    >
+                      Uploaded List
+                    </button>
+                  )}
+                </div>
+                {uploadedData.length > 0 && (
+                  <div className="excel-table-container">
+                    <table id="excel-table">
+                      <thead>
+                        <tr>
+                          {uploadedData[0].map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {uploadedData.slice(1).map((row, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {row.map((cell, cellIndex) => (
+                              <td key={cellIndex}>{cell}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <button
+                  className="modal-btn btn-save-uploaded-data"
+                  onClick={handleSaveUploadedData}
+                >
+                  Save Upload
+                </button>
+                <button
+                  onClick={onClose}
                   className="modal-btn-cancel btn-create-group"
                 >
                   Cancel
                 </button>
+              </div>
+            </div>
           </div>
+          <ToastContainer
+            className="custom-toast"
+            position="bottom-center"
+            autoClose={3000}
+            hideProgressBar={true} // Disable progress bar
+            closeOnClick={false}
+            closeButton={false}
+            pauseOnHover={true}
+            draggable={true}
+            theme="light" // Optional: Choose theme ('light', 'dark', 'colored')
+          />
         </div>
-      </div>
-      <ToastContainer
-        className="custom-toast"
-        position="bottom-center"
-        autoClose={3000}
-        hideProgressBar={true} // Disable progress bar
-        closeOnClick={false}
-        closeButton={false}
-        pauseOnHover={true}
-        draggable={true}
-        theme="light" // Optional: Choose theme ('light', 'dark', 'colored')
-      />
-    </div>
-  )}
-    </> );
+      )}
+    </>
+  );
 };
 export default GroupModalnew;

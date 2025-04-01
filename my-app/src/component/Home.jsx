@@ -1,11 +1,10 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   FaFileAlt,
   FaHistory,
   FaUserPlus,
   FaEye,
   FaUser,
-  
 } from "react-icons/fa";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
@@ -36,12 +35,12 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [templates,setTemplates]=useState([]);
-  const [showtemModal,setShowtemModal]=useState(false);
-  const [selectedTemplatepre,setSelectedTemplatepre]=useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [showtemModal, setShowtemModal] = useState(false);
+  const [selectedTemplatepre, setSelectedTemplatepre] = useState(null);
   const [bgColortem, setBgColortem] = useState("ffffff");
   const [previewContenttem, setPreviewContenttem] = useState([]);
-  const [isPreviewOpen,setIsPreviewOpen]=useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -56,20 +55,20 @@ const Home = () => {
         navigate("/"); // Redirect to login if user is not found
         return;
       }
-  
+
       try {
-        const res = await axios.get(`${apiConfig.baseURL}/api/stud/templates/${user.id}`);
+        const res = await axios.get(
+          `${apiConfig.baseURL}/api/stud/templates/${user.id}`
+        );
         setTemplates(res.data);
       } catch (err) {
         console.error(err);
         toast.error("Failed to fetch templates");
       }
     };
-  
+
     fetchtemplate();
-  }, [user, navigate]);  // Ensure useEffect is dependent on `user` and `navigate`
-  
-  
+  }, [user, navigate]); // Ensure useEffect is dependent on `user` and `navigate`
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -92,7 +91,6 @@ const Home = () => {
       navigate("/signup");
       toast.warning("Signup first to access Homepage");
     } else {
-      
       const modalShown = localStorage.getItem("modalShown");
       if (!modalShown) {
         setShowPopup(true); // Show modal on first navigation
@@ -101,13 +99,11 @@ const Home = () => {
     }
   }, [user, navigate]);
 
-
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("modalShown"); // Reset modalShown for next login
-    localStorage.setItem("hasvisit",true);
+    localStorage.setItem("hasvisit", true);
     navigate("/");
   };
 
@@ -136,20 +132,20 @@ const Home = () => {
     setPreviewContenttem(template.previewContent || []); // Update previewContent
   };
 
-  const handleCloseModalpre=()=>{
+  const handleCloseModalpre = () => {
     setIsPreviewOpen(false);
     setShowtemModal(true);
-  }
-  const handleprevcampaignname=()=>{
+  };
+  const handleprevcampaignname = () => {
     setShowCampaignModalTem(true);
-  }
-  
-const handleopentem=()=>{
-  setShowtemModal(true);
-}
-const handletemclose=()=>{
-  setShowtemModal(false);
-}
+  };
+
+  const handleopentem = () => {
+    setShowtemModal(true);
+  };
+  const handletemclose = () => {
+    setShowtemModal(false);
+  };
 
   const handleCreateCampaign = () => {
     setShowCampaignModal(true);
@@ -159,12 +155,11 @@ const handletemclose=()=>{
     setShowListPageModal(true);
   };
 
-
   const handleaddfilecontacts = () => {
     setShowfileGroupModal(true);
   };
 
-  const handleCreateButton = () => { 
+  const handleCreateButton = () => {
     if (!user || !user.id) {
       toast.error("Please ensure the user is valid");
       return;
@@ -173,22 +168,25 @@ const handletemclose=()=>{
       toast.error("Please enter a campaign name");
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     axios
       .post(`${apiConfig.baseURL}/api/stud/campaign`, {
-        camname: campaignName,  // Ensure the field matches backend
+        camname: campaignName, // Ensure the field matches backend
         userId: user.id,
       })
       .then((response) => {
-        localStorage.setItem("campaign", JSON.stringify(response.data.campaign));
+        localStorage.setItem(
+          "campaign",
+          JSON.stringify(response.data.campaign)
+        );
         console.log("Campaign created successfully");
-  
+
         setIsLoading(false);
         setShowCampaignModal(false);
         setCampaignName("");
-  
+
         if (window.innerWidth <= 768) {
           navigate("/campaign"); // Mobile
         } else {
@@ -198,18 +196,22 @@ const handletemclose=()=>{
       .catch((error) => {
         setIsLoading(false);
         console.error("Error:", error);
-        
-     // Dismiss previous toasts before showing a new one
-     toast.dismiss();
 
-     if (error.response && error.response.data && error.response.data.message) {
-       toast.warning(error.response.data.message, { autoClose: 3000 });
-     } else {
-       toast.error("Failed to create campaign", { autoClose: 3000 });
-     }
+        // Dismiss previous toasts before showing a new one
+        toast.dismiss();
+
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          toast.warning(error.response.data.message, { autoClose: 3000 });
+        } else {
+          toast.error("Failed to create campaign", { autoClose: 3000 });
+        }
       });
   };
-  const handleCreateTemButton = () => { 
+  const handleCreateTemButton = () => {
     if (!user || !user.id) {
       toast.error("Please ensure the user is valid");
       return;
@@ -218,48 +220,54 @@ const handletemclose=()=>{
       toast.error("Please enter a campaign name");
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     axios
       .post(`${apiConfig.baseURL}/api/stud/campaign`, {
-        camname: campaignName,  // Ensure the field matches backend
+        camname: campaignName, // Ensure the field matches backend
         userId: user.id,
       })
       .then((response) => {
-        localStorage.setItem("campaign", JSON.stringify(response.data.campaign));
+        localStorage.setItem(
+          "campaign",
+          JSON.stringify(response.data.campaign)
+        );
         console.log("Campaign created successfully");
-  
+
         setIsLoading(false);
         setShowCampaignModal(false);
         setCampaignName("");
-  
+
         if (window.innerWidth <= 768) {
           navigate("/campaign"); // Mobile
         } else {
-
-          navigate("/TemMainpage",{ state: {previewContenttem,bgColortem }}); // PC
+          navigate("/TemMainpage", {
+            state: { previewContenttem, bgColortem },
+          }); // PC
         }
       })
       .catch((error) => {
         setIsLoading(false);
         console.error("Error:", error);
-        
-     // Dismiss previous toasts before showing a new one
-     toast.dismiss();
 
-     if (error.response && error.response.data && error.response.data.message) {
-       toast.warning(error.response.data.message, { autoClose: 3000 });
-     } else {
-       toast.error("Failed to create campaign", { autoClose: 3000 });
-     }
+        // Dismiss previous toasts before showing a new one
+        toast.dismiss();
+
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          toast.warning(error.response.data.message, { autoClose: 3000 });
+        } else {
+          toast.error("Failed to create campaign", { autoClose: 3000 });
+        }
       });
   };
   const handlecampaignhistory = () => {
     navigate("/campaigntable");
   };
-
- 
 
   return (
     <>
@@ -304,23 +312,23 @@ const handletemclose=()=>{
               </h2>
             </div>
             <div className="nav-split">
-                <h4>
-                  <span
-                    style={{
-                      transform: "scaleX(-1)",
-                      display: "inline-block",
-                      color: "gold",
-                      marginRight: "5px",
-                    }}
-                  >
-                    <MdWavingHand size={17} />
-                  </span>{" "}
-                  Hey{" "}
-                  <span style={{ color: "#f48c06" }}>
-                    {user?.username || "Guest"}
-                  </span>
-                </h4>
-             
+              <h4>
+                <span
+                  style={{
+                    transform: "scaleX(-1)",
+                    display: "inline-block",
+                    color: "gold",
+                    marginRight: "5px",
+                  }}
+                >
+                  <MdWavingHand size={17} />
+                </span>{" "}
+                Hey{" "}
+                <span style={{ color: "#f48c06" }}>
+                  {user?.username || "Guest"}
+                </span>
+              </h4>
+
               <div className="profile-container" ref={dropdownRef}>
                 <button onClick={toggleDropdown} className="profile-button">
                   <FaUserCircle className="profile-icon" />
@@ -349,7 +357,6 @@ const handletemclose=()=>{
                   <FaAddressBook className="icons contact-icon" />
                   <span className="card-texts">Contact</span>
                 </div>
-                
               </div>
             )}
 
@@ -380,18 +387,21 @@ const handletemclose=()=>{
             )}
             {view === "create-contact" && (
               <div className="card-grid">
-              <div className="cards" onClick={() => {
-    setShowNewGroupModal(prev => !prev); // Toggle state
-}}>
-  <FaUserPlus className="icons contact-create-icon" />
-  <span className="card-texts">New Group</span>
-</div>
+                <div
+                  className="cards"
+                  onClick={() => {
+                    setShowNewGroupModal((prev) => !prev); // Toggle state
+                  }}
+                >
+                  <FaUserPlus className="icons contact-create-icon" />
+                  <span className="card-texts">New Group</span>
+                </div>
                 <div className="cards" onClick={handleaddfilecontacts}>
                   <FaUser className="icons contact-view-icon" />
                   <span className="card-texts">Existing Group</span>
                 </div>
               </div>
-            )}           
+            )}
           </div>
 
           {/* Show group existing modal    */}
@@ -414,7 +424,7 @@ const handletemclose=()=>{
                   {[...Array(30)].map((_, index) => (
                     <div key={index} className="confetti"></div>
                   ))}
-                </div>           
+                </div>
                 <button className="welcome-close-button" onClick={closePopup}>
                   <FaTimes className="text-red-500 cursor-pointer" />
                 </button>
@@ -431,388 +441,407 @@ const handletemclose=()=>{
               </div>
             </div>
           )}
- {/* Modal for Email Details */}
- {showtemModal && (
-        <div className="modal-overlay-tem">
-        <div className="modal-content-tem">
-          <h2>Saved Templates</h2>
-          <button className="close-button-tem" onClick={handletemclose}>x</button>
-          <ol>
-            {templates.length > 0 ? (
-              templates.map((template) => (
-                <li key={template._id}
-                onClick={() => handlePreview(template)}>{template.temname}</li>
-              ))
-            ) : (
-              <p>No templates found</p>
-            )}
-          </ol>
-        </div>
-      </div>
-      )}
-
-{isPreviewOpen && (
-  <div className="preview-modal-overlay-tem">
-    <div className="preview-modal-content-tem">
-        {selectedTemplatepre && (
-          <h3 className="temname">{selectedTemplatepre.temname} Preview</h3>
-        )}
-          <button className="close-modal-read-pre" onClick={handleCloseModalpre}>
-              x
-            </button>
-        <div>
-          <div style={{ backgroundColor:bgColortem,borderRadius:"10px",pointerEvents:"none" }}>
-            {previewContenttem.map((item, index) => {
-              if (!item || !item.type) return null;
-              return (
-                <div className="content-item-preview" style={item.style} key={index}>
-             {item.type === "para" && (
-                                   <>
-                                     <p
-                                       className="border"
-                                       style={item.style}
-                                       dangerouslySetInnerHTML={{ __html: item.content }} // Render HTML content here
-                                     />
-                                   </>
-                                 )}
-           
-                                 {item.type === "multi-image" ? (
-                                   <div className="Layout-img">
-                                     <div className="Layout">
-                                       <img
-                                         src={
-                                           item.src1 || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="multiimg"
-                                         title="Upload Image"
-                                         style={item.style}
-                                       />
-                                       <a
-                                         href={item.link1}
-                                         target="_blank"
-                                         className="button-preview"
-                                         rel="noopener noreferrer"
-                                         style={item.buttonStyle1}
-                                       >
-                                         {item.content1}
-                                       </a>
-                                     </div>
-           
-                                     <div className="Layout">
-                                       <img
-                                         src={
-                                           item.src2 || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="multiimg"
-                                         title="Upload Image"
-                                         style={item.style}
-                                       />
-                                       <a
-                                         href={item.link2}
-                                         target="_blank"
-                                         rel="noopener noreferrer"
-                                         className="button-preview"
-                                         style={item.buttonStyle2}
-                                       >
-                                         {item.content2}
-                                       </a>
-                                     </div>
-                                   </div>
-                                 ) : null}
-           
-                                 {item.type === "video-icon" ? (
-                                   <div className="video-icon">
-                                     <img
-                                       src={item.src1 || "https://via.placeholder.com/200"}
-                                       alt="Editable"
-                                       className="videoimg"
-                                       title="Upload Thumbnail Image"
-                                       style={item.style}
-                                     />
-                                     <a
-                                       href={item.link}
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                     >
-                                       <img
-                                         src={item.src2}
-                                         className="video-btn"
-                                         alt="icon"
-                                       />
-                                     </a>
-                                   </div>
-                                 ) : null}
-           
-                                 
-                                 
-           {item.type === "cardimage" ? (
-                                   <div
-                                     className="card-image-container"
-                                     style={item.style1}
-                                   >
-                                     <img
-                                       src={item.src1 || "https://via.placeholder.com/200"}
-                                       style={item.style}
-                                       alt="Editable"
-                                       className="card-image"
-                                       title="Upload Image"
-                                     />
-                                     <p
-                                       className="card-text"
-                                       style={item.style}
-                                       dangerouslySetInnerHTML={{
-                                         __html: item.content1,
-                                       }}
-                                     />
-          
-                                   </div>
-                                 ) : null}
-           
-                                 {item.type === "head" && (
-                                   <div>
-                                     <p
-                                       className="border"
-                                     
-                                       style={item.style}
-                                     >
-                                       {item.content}
-                                     </p>
-                                     
-                                   </div>
-                                 )}
-           
-                                 {item.type === "link-image" && (
-                                   <div className="border">
-                                     <a
-                                       href={item.link || "#"}
-                                     >
-                                       <img
-                                         src={
-                                           item.src || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="img"
-                                         style={item.style}
-                                       />
-                                     </a>
-                                   </div>
-                                 )}
-                                 {item.type === "image" && (
-                                   <div className="border">
-                                     <img
-                                       src={item.src || "https://via.placeholder.com/200"}
-                                       alt="Editable"
-                                       className="img"
-                                       style={item.style}
-                                     />
-                                   </div>
-                                 )}
-           
-                                 {item.type === "icons" && (
-                                   <div
-                                     className="border-icons"
-                                     style={item.ContentStyle}
-                                     key={index}
-                                   >
-                                     <div className="icon-containers">
-                                       <a
-                                         href={item.links1 || "#"}
-                                         target="_blank"
-                                         rel="noopener noreferrer"
-                                       >
-                                         <img
-                                           src={item.iconsrc1}
-                                           alt="Facebook"
-                                           className="icon"
-                                           style={item.style1}
-                                         />
-                                       </a>
-           
-                                       <a
-                                         href={item.links2 || "#"}
-                                         target="_blank"
-                                         rel="noopener noreferrer"
-                                       >
-                                         <img
-                                           src={item.iconsrc2}
-                                           alt="Twitter"
-                                           className="icon"
-                                           rel="noopener noreferrer"
-                                           style={item.style2}
-                                         />
-                                       </a>
-           
-                                       <a
-                                         href={item.links3 || "#"}
-                                         target="_blank"
-                                         rel="noopener noreferrer"
-                                       >
-                                         <img
-                                           src={item.iconsrc3}
-                                           alt="Instagram"
-                                           className="icon"
-                                           style={item.style3}
-                                         />
-                                       </a>
-           
-                                       <a
-                                         href={item.links4 || "#"}
-                                         target="_blank"
-                                         rel="noopener noreferrer"
-                                       >
-                                         <img
-                                           src={item.iconsrc4}
-                                           alt="Youtube"
-                                           className="icon"
-                                           style={item.style4}
-                                         />
-                                       </a>
-                                     </div>
-                                   </div>
-                                 )}
-           
-                                 {item.type === "imagewithtext" ? (
-                                   <div className="image-text-container">
-                                     <div
-                                       className="image-text-wrapper"
-                                       style={item.style1}
-                                     >
-                                       <img
-                                         src={
-                                           item.src1 || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="image-item"
-                                         title="Upload Image"
-                                       />
-                                       <p
-                                         className="text-item"
-                                         style={item.style}
-                                         dangerouslySetInnerHTML={{
-                                           __html: item.content1,
-                                         }}
-                                       />
-                                     </div>
-                                   
-                                   </div>
-                                 ) : null}
-                                 
-           
-           {item.type === "multipleimage" ? (
-                                   <div className="Layout-img">
-                                     <div className="Layout">
-                                       <img
-                                         src={
-                                           item.src1 || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="multiple-img"
-                                         title="Upload Image"
-                                         style={item.style}
-                                       />
-                              
-                                     </div>
-           
-                                     <div className="Layout">
-                                       <img
-                                         src={
-                                           item.src2 || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="multiple-img"
-                                         title="Upload Image"
-                                         style={item.style}
-                                       />
-                                    
-                                     </div>
-                                   </div>
-                                 ) : null}
-           
-                                 {item.type === "textwithimage" ? (
-                                   <div className="image-text-container">
-                                     <div
-                                       className="image-text-wrapper"
-                                       style={item.style}
-                                     >
-                                       <p
-                                         className="text-item"
-                                         style={item.style}
-                                         dangerouslySetInnerHTML={{
-                                           __html: item.content2,
-                                         }}
-                                       />
-                                       <img
-                                         src={
-                                           item.src2 || "https://via.placeholder.com/200"
-                                         }
-                                         alt="Editable"
-                                         className="image-item"
-                                         title="Upload Image"
-                                       />
-                                     </div>
-                                   
-                                   </div>
-                                 ) : null}
-           
-                                 {item.type === "logo" && (
-                                   <div className="border">
-                                     <img
-                                       src={item.src || "https://via.placeholder.com/200"}
-                                       alt="Editable"
-                                       className="logo"
-                                       style={item.style}
-                                     />
-                                   </div>
-                                 )}
-                                 {item.type === "button" && (
-                                   <div className="border-btn">
-                                     <a
-                                       href={item.link || "#"}
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                       style={item.style}
-                                       className="button-preview"
-                                     >
-                                       {item.content}
-                                     </a>
-                                   </div>
-                                 )}
-                                 {item.type === "link" && (
-                                   <div className="border-btn">
-                                     <a
-                                       href={item.href || "#"}
-                                       style={item.style}
-                                     >
-                                       {item.content}
-                                     </a>
-                                   </div>
-                                 )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="prev-select-btn">
-        <button
-                          onClick={handleprevcampaignname}
-
-                  className="preview-create-button"
-                  >
-                Select
+          {/* Modal for Email Details */}
+          {showtemModal && (
+            <div className="modal-overlay-tem">
+              <div className="modal-content-tem">
+                <h2>Saved Templates</h2>
+                <button className="close-button-tem" onClick={handletemclose}>
+                  x
                 </button>
+                <ol>
+                  {templates.length > 0 ? (
+                    templates.map((template) => (
+                      <li
+                        key={template._id}
+                        onClick={() => handlePreview(template)}
+                      >
+                        {template.temname}
+                      </li>
+                    ))
+                  ) : (
+                    <p>No templates found</p>
+                  )}
+                </ol>
+              </div>
+            </div>
+          )}
+
+          {isPreviewOpen && (
+            <div className="preview-modal-overlay-tem">
+              <div className="preview-modal-content-tem">
+                {selectedTemplatepre && (
+                  <h3 className="temname">
+                    {selectedTemplatepre.temname} Preview
+                  </h3>
+                )}
                 <button
-                  onClick={() => setIsPreviewOpen(false)}
-                  className="preview-create-button"
-                  style={{backgroundColor:"#f48c06"}}
+                  className="close-modal-read-pre"
+                  onClick={handleCloseModalpre}
                 >
-                  Cancel
+                  x
                 </button>
-          </div>
-    </div>   
-  </div>
-)}
+                <div>
+                  <div
+                    style={{
+                      backgroundColor: bgColortem,
+                      borderRadius: "10px",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    {previewContenttem.map((item, index) => {
+                      if (!item || !item.type) return null;
+                      return (
+                        <div
+                          className="content-item-preview"
+                          style={item.style}
+                          key={index}
+                        >
+                          {item.type === "para" && (
+                            <>
+                              <p
+                                className="border"
+                                style={item.style}
+                                dangerouslySetInnerHTML={{
+                                  __html: item.content,
+                                }} // Render HTML content here
+                              />
+                            </>
+                          )}
+
+                          {item.type === "multi-image" ? (
+                            <div className="Layout-img">
+                              <div className="Layout">
+                                <img
+                                  src={
+                                    item.src1 ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="multiimg"
+                                  title="Upload Image"
+                                  style={item.style}
+                                />
+                                <a
+                                  href={item.link1}
+                                  target="_blank"
+                                  className="button-preview"
+                                  rel="noopener noreferrer"
+                                  style={item.buttonStyle1}
+                                >
+                                  {item.content1}
+                                </a>
+                              </div>
+
+                              <div className="Layout">
+                                <img
+                                  src={
+                                    item.src2 ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="multiimg"
+                                  title="Upload Image"
+                                  style={item.style}
+                                />
+                                <a
+                                  href={item.link2}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="button-preview"
+                                  style={item.buttonStyle2}
+                                >
+                                  {item.content2}
+                                </a>
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {item.type === "video-icon" ? (
+                            <div className="video-icon">
+                              <img
+                                src={
+                                  item.src1 || "https://via.placeholder.com/200"
+                                }
+                                alt="Editable"
+                                className="videoimg"
+                                title="Upload Thumbnail Image"
+                                style={item.style}
+                              />
+                              <a
+                                href={item.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <img
+                                  src={item.src2}
+                                  className="video-btn"
+                                  alt="icon"
+                                />
+                              </a>
+                            </div>
+                          ) : null}
+
+                          {item.type === "cardimage" ? (
+                            <div
+                              className="card-image-container"
+                              style={item.style1}
+                            >
+                              <img
+                                src={
+                                  item.src1 || "https://via.placeholder.com/200"
+                                }
+                                style={item.style}
+                                alt="Editable"
+                                className="card-image"
+                                title="Upload Image"
+                              />
+                              <p
+                                className="card-text"
+                                style={item.style}
+                                dangerouslySetInnerHTML={{
+                                  __html: item.content1,
+                                }}
+                              />
+                            </div>
+                          ) : null}
+
+                          {item.type === "head" && (
+                            <div>
+                              <p className="border" style={item.style}>
+                                {item.content}
+                              </p>
+                            </div>
+                          )}
+
+                          {item.type === "link-image" && (
+                            <div className="border">
+                              <a href={item.link || "#"}>
+                                <img
+                                  src={
+                                    item.src ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="img"
+                                  style={item.style}
+                                />
+                              </a>
+                            </div>
+                          )}
+                          {item.type === "image" && (
+                            <div className="border">
+                              <img
+                                src={
+                                  item.src || "https://via.placeholder.com/200"
+                                }
+                                alt="Editable"
+                                className="img"
+                                style={item.style}
+                              />
+                            </div>
+                          )}
+
+                          {item.type === "icons" && (
+                            <div
+                              className="border-icons"
+                              style={item.ContentStyle}
+                              key={index}
+                            >
+                              <div className="icon-containers">
+                                <a
+                                  href={item.links1 || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <img
+                                    src={item.iconsrc1}
+                                    alt="Facebook"
+                                    className="icon"
+                                    style={item.style1}
+                                  />
+                                </a>
+
+                                <a
+                                  href={item.links2 || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <img
+                                    src={item.iconsrc2}
+                                    alt="Twitter"
+                                    className="icon"
+                                    rel="noopener noreferrer"
+                                    style={item.style2}
+                                  />
+                                </a>
+
+                                <a
+                                  href={item.links3 || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <img
+                                    src={item.iconsrc3}
+                                    alt="Instagram"
+                                    className="icon"
+                                    style={item.style3}
+                                  />
+                                </a>
+
+                                <a
+                                  href={item.links4 || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <img
+                                    src={item.iconsrc4}
+                                    alt="Youtube"
+                                    className="icon"
+                                    style={item.style4}
+                                  />
+                                </a>
+                              </div>
+                            </div>
+                          )}
+
+                          {item.type === "imagewithtext" ? (
+                            <div className="image-text-container">
+                              <div
+                                className="image-text-wrapper"
+                                style={item.style1}
+                              >
+                                <img
+                                  src={
+                                    item.src1 ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="image-item"
+                                  title="Upload Image"
+                                />
+                                <p
+                                  className="text-item"
+                                  style={item.style}
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.content1,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {item.type === "multipleimage" ? (
+                            <div className="Layout-img">
+                              <div className="Layout">
+                                <img
+                                  src={
+                                    item.src1 ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="multiple-img"
+                                  title="Upload Image"
+                                  style={item.style}
+                                />
+                              </div>
+
+                              <div className="Layout">
+                                <img
+                                  src={
+                                    item.src2 ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="multiple-img"
+                                  title="Upload Image"
+                                  style={item.style}
+                                />
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {item.type === "textwithimage" ? (
+                            <div className="image-text-container">
+                              <div
+                                className="image-text-wrapper"
+                                style={item.style}
+                              >
+                                <p
+                                  className="text-item"
+                                  style={item.style}
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.content2,
+                                  }}
+                                />
+                                <img
+                                  src={
+                                    item.src2 ||
+                                    "https://via.placeholder.com/200"
+                                  }
+                                  alt="Editable"
+                                  className="image-item"
+                                  title="Upload Image"
+                                />
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {item.type === "logo" && (
+                            <div className="border">
+                              <img
+                                src={
+                                  item.src || "https://via.placeholder.com/200"
+                                }
+                                alt="Editable"
+                                className="logo"
+                                style={item.style}
+                              />
+                            </div>
+                          )}
+                          {item.type === "button" && (
+                            <div className="border-btn">
+                              <a
+                                href={item.link || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={item.style}
+                                className="button-preview"
+                              >
+                                {item.content}
+                              </a>
+                            </div>
+                          )}
+                          {item.type === "link" && (
+                            <div className="border-btn">
+                              <a href={item.href || "#"} style={item.style}>
+                                {item.content}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="prev-select-btn">
+                  <button
+                    onClick={handleprevcampaignname}
+                    className="preview-create-button"
+                  >
+                    Select
+                  </button>
+                  <button
+                    onClick={() => setIsPreviewOpen(false)}
+                    className="preview-create-button"
+                    style={{ backgroundColor: "#f48c06" }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Modal for Creating Campaign */}
           {showCampaignModal && (
@@ -847,8 +876,8 @@ const handletemclose=()=>{
               </div>
             </div>
           )}
-            {/* Modal for Creating Campaign */}
-            {showCampaignModalTem && (
+          {/* Modal for Creating Campaign */}
+          {showCampaignModalTem && (
             <div className="campaign-modal-overlay">
               <div className="campaign-modal-content">
                 <h3>Create Campaign </h3>
@@ -872,7 +901,7 @@ const handletemclose=()=>{
                   )}{" "}
                 </button>
                 <button
-                  onClick={() => setShowCampaignModal(false)}
+                  onClick={() => setShowCampaignModalTem(false)}
                   className="modal-create-button-cancel-modal"
                 >
                   Cancel
@@ -921,4 +950,3 @@ const handletemclose=()=>{
 };
 
 export default Home;
-

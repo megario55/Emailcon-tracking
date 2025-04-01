@@ -20,29 +20,33 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-        setIsLoading(true); // Start loading
+    setIsLoading(true); // Start loading
 
     try {
-      const response = await axios.post(`${apiConfig.baseURL}/api/auth/signup`, {
-        email,
-        username,
-        password,
-        smtppassword,
-      });
+      const response = await axios.post(
+        `${apiConfig.baseURL}/api/auth/signup`,
+        {
+          email,
+          username,
+          password,
+          smtppassword,
+        }
+      );
 
       toast.success(response.data.message || "Account created successfully!");
 
       setTimeout(() => {
         navigate("/");
       }, 4000);
-    }
-    catch (error) {
+    } catch (error) {
       if (error.response) {
         const errorMessage = error.response.data.message || "Error signing up";
-    
+
         if (error.response.status === 400) {
           if (errorMessage.includes("User already exists")) {
-            toast.warning("User already exists. Please use a different email or username.");
+            toast.warning(
+              "User already exists. Please use a different email or username."
+            );
           } else {
             toast.error(errorMessage);
           }
@@ -52,11 +56,8 @@ function Signup() {
       } else {
         toast.error("Network error. Please try again.");
       }
-    }
-    
-    finally{
-          setIsLoading(false); 
-
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,7 +65,7 @@ function Signup() {
     <div className="signup-page">
       <div className="signup-cover">
         <div className="signup-aside">
-          <img src={sign} alt="Sample signup img" className="signup-image"/>
+          <img src={sign} alt="Sample signup img" className="signup-image" />
           <h2 style={{ fontWeight: "550", color: "#2f327d" }}>
             Welcome To <span style={{ color: "#f48c06" }}>Emailcon...!</span>
           </h2>
@@ -94,8 +95,12 @@ function Signup() {
               onChange={(e) => setAuthMethod(e.target.value)}
               className="signup-dropdown"
             >
-              <option value="Hostinger" className="options">Hostinger</option>
-              <option value="Gmail" className="options">Gmail</option>
+              <option value="Hostinger" className="options">
+                Hostinger
+              </option>
+              <option value="Gmail" className="options">
+                Gmail
+              </option>
             </select>
           </div>
           <form onSubmit={handleSubmit} className="form-content">
@@ -144,10 +149,10 @@ function Signup() {
               {authMethod === "Gmail" && (
                 <FaInfoCircle
                   className="info-icon"
- onClick={() => {
-    console.log("Info icon clicked!");
-    setIsModalOpen(true);
-  }}
+                  onClick={() => {
+                    console.log("Info icon clicked!");
+                    setIsModalOpen(true);
+                  }}
                   style={{ cursor: "pointer", marginLeft: "5px" }}
                 />
               )}
@@ -162,14 +167,17 @@ function Signup() {
               />
             </div>
             <div className="sub-btn">
-              <button type="submit" className="signup-button signup-submit"
-              disabled={isLoading}>
-             {isLoading ? (
+              <button
+                type="submit"
+                className="signup-button signup-submit"
+                disabled={isLoading}
+              >
+                {isLoading ? (
                   <span className="loader-signup"></span> // Spinner
                 ) : (
                   "Sign in"
                 )}
-                              </button>
+              </button>
             </div>
             <div className="sign-log">
               <button
@@ -196,10 +204,19 @@ function Signup() {
               <li>
                 Generate a new app password for "Mail" and select your device.
               </li>
-              <li>Copy and use the generated passcode in the SMTP App Passcode field.</li>
-              <li>Sample 16 digit App Passcode is <strong>deyq kjki kvii olua.</strong></li>
+              <li>
+                Copy and use the generated passcode in the SMTP App Passcode
+                field.
+              </li>
+              <li>
+                Sample 16 digit App Passcode is{" "}
+                <strong>deyq kjki kvii olua.</strong>
+              </li>
             </ol>
-            <button onClick={() => setIsModalOpen(false)} className="modal-close-button">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="modal-close-button"
+            >
               Close
             </button>
           </div>
@@ -216,7 +233,7 @@ function Signup() {
         pauseOnHover={true}
         draggable={true}
         theme="light"
-        />
+      />
     </div>
   );
 }

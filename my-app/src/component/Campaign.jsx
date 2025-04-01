@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import Lookingimg from "../Images/hand-drawn-step-illustration.png";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import "../component/Campaign.css";
 
 function Campaign() {
   const navigate = useNavigate(); // ✅ Correct usage
 
   const handleToggle = () => {
-    navigate("/editor");    
+    navigate("/editor");
   };
 
   return (

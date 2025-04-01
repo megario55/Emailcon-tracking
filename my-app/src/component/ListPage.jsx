@@ -3,7 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ListPage.css";
-import { FiEdit, FiTrash2, FiRefreshCw,FiEye } from 'react-icons/fi'; // Importing icons
+import { FiEdit, FiTrash2, FiRefreshCw, FiEye } from "react-icons/fi"; // Importing icons
 import apiConfig from "../apiconfig/apiConfig";
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {
@@ -14,24 +14,25 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {
       <div className="modal-content modal-confirm">
         <p>{message}</p>
         <div className="confirm">
-        <button className="editbtn" onClick={onConfirm}>
-          Yes
-        </button>
-        <button className="cancelbtn" onClick={onClose}>
-          No
-        </button>
+          <button className="editbtn" onClick={onConfirm}>
+            Yes
+          </button>
+          <button className="cancelbtn" onClick={onClose}>
+            No
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-
 const ListPage = ({ onClose }) => {
- const [activeTab, setActiveTab] = useState("groups");
+  const [activeTab, setActiveTab] = useState("groups");
   const [groups, setGroups] = useState([]);
   const [students, setStudents] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState(groups.length > 0 ? groups[0]._id : "");
+  const [selectedGroup, setSelectedGroup] = useState(
+    groups.length > 0 ? groups[0]._id : ""
+  );
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [editingStudent, setEditingStudent] = useState(null);
   const [editFormData, setEditFormData] = useState({});
@@ -42,47 +43,48 @@ const ListPage = ({ onClose }) => {
   const [showDeletingToast, setShowDeletingToast] = useState(false);
   const [showEditingToast, setShowEditingToast] = useState(false);
 
-
   const user = JSON.parse(localStorage.getItem("user"));
 
- useEffect(() => {
+  useEffect(() => {
     // If there's no selected group or if students are empty, we should set to the first group
     if (!selectedGroup && groups.length > 0) {
       setSelectedGroup(groups[0]._id); // Set the first group's id as the default
     }
   }, [groups, selectedGroup]); // Re-run this effect if groups or selectedGroup change
 
+  useEffect(() => {
+    const fetchGroupsAndStudents = () => {
+      axios
+        .get(`${apiConfig.baseURL}/api/stud/groups/${user.id}`)
+        .then((response) => setGroups(response.data))
+        .catch((err) => console.log(err));
 
-useEffect(() => {
- const fetchGroupsAndStudents = () => {
-  axios.get(`${apiConfig.baseURL}/api/stud/groups/${user.id}`)
-    .then((response) => setGroups(response.data))
-    .catch((err) => console.log(err));
-
-  axios.get(`${apiConfig.baseURL}/api/stud/students`)
-    .then((response) => {
-      setStudents(response.data);
-    })
-    .catch((err) => console.log(err));
-};
-fetchGroupsAndStudents();
-}, [user]);
-
+      axios
+        .get(`${apiConfig.baseURL}/api/stud/students`)
+        .then((response) => {
+          setStudents(response.data);
+        })
+        .catch((err) => console.log(err));
+    };
+    fetchGroupsAndStudents();
+  }, [user]);
 
   const handleRefresh = () => {
-  axios.get(`${apiConfig.baseURL}/api/stud/groups/${user.id}`)
-    .then((response) => setGroups(response.data))
-    .catch((err) => console.log(err));
+    axios
+      .get(`${apiConfig.baseURL}/api/stud/groups/${user.id}`)
+      .then((response) => setGroups(response.data))
+      .catch((err) => console.log(err));
 
-  axios.get(`${apiConfig.baseURL}/api/stud/students`)
-    .then((response) => {
-      setStudents(response.data);
-    })
-    .catch((err) => console.log(err));
-};
-  
+    axios
+      .get(`${apiConfig.baseURL}/api/stud/students`)
+      .then((response) => {
+        setStudents(response.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
   // Delete a group
-   const handleDeleteGroup = (groupId) => {
+  const handleDeleteGroup = (groupId) => {
     setGroupToDelete(groupId);
     setIsModalOpen(true);
   };
@@ -106,39 +108,37 @@ fetchGroupsAndStudents();
     }
   };
   // Delete selected students
-const handleDeleteSelectedStudents = () => {
-  if (selectedStudents.length === 0) {
-    toast.error("Please select contacts to delete.");
-    return;
-  }
+  const handleDeleteSelectedStudents = () => {
+    if (selectedStudents.length === 0) {
+      toast.error("Please select contacts to delete.");
+      return;
+    }
 
-  setShowDeletingToast(true); // Show toast
+    setShowDeletingToast(true); // Show toast
 
-  // Optimistically update UI before making the request
-  const updatedStudents = students.filter(
-    (student) => !selectedStudents.includes(student._id)
-  );
-  setStudents(updatedStudents);
-  setSelectedStudents([]);
+    // Optimistically update UI before making the request
+    const updatedStudents = students.filter(
+      (student) => !selectedStudents.includes(student._id)
+    );
+    setStudents(updatedStudents);
+    setSelectedStudents([]);
 
-  axios
-    .delete(`${apiConfig.baseURL}/api/stud/students`, {
-      data: { studentIds: selectedStudents },
-    })
-    .then(() => {
-      toast.success("Selected contacts deleted!");
-    })
-    .catch(() => {
-      // If deletion fails, revert UI changes
-      toast.error("Failed to delete contacts");
-      setStudents(students); // Restore previous state
-    })
-    .finally(() => {
-      setShowDeletingToast(false); // Hide toast
-    });
-};
-
-
+    axios
+      .delete(`${apiConfig.baseURL}/api/stud/students`, {
+        data: { studentIds: selectedStudents },
+      })
+      .then(() => {
+        toast.success("Selected contacts deleted!");
+      })
+      .catch(() => {
+        // If deletion fails, revert UI changes
+        toast.error("Failed to delete contacts");
+        setStudents(students); // Restore previous state
+      })
+      .finally(() => {
+        setShowDeletingToast(false); // Hide toast
+      });
+  };
 
   // Edit group name
   const handleEditGroupName = (group) => {
@@ -171,51 +171,52 @@ const handleDeleteSelectedStudents = () => {
     // toast.success("Edit contact detail in bottom of tab");
     console.log(student); // Debug log
     setEditingStudent(student);
-  
+
     // Clone the student object and remove `_id`
-    const { _id,__v, ...updatedFormData } = student;
-  
+    const { _id, __v, ...updatedFormData } = student;
+
     // Ensure 'group' field gets the correct ID
     if (student.group?._id) {
       updatedFormData.group = student.group._id;
     }
-  
+
     setEditFormData(updatedFormData); // Set the form data without `_id`
   };
-  
 
-const handleSaveStudent = () => {
-  if (Object.values(editFormData).some((val) => val === "")) {
-    toast.error("All fields are required");
-    return;
-  }
+  const handleSaveStudent = () => {
+    if (Object.values(editFormData).some((val) => val === "")) {
+      toast.error("All fields are required");
+      return;
+    }
 
-  setShowEditingToast(true); // Show toast
+    setShowEditingToast(true); // Show toast
 
-  axios
-    .put(`${apiConfig.baseURL}/api/stud/students/${editingStudent._id}`, editFormData)
-    .then((response) => {
-      const updatedStudent = response.data;
+    axios
+      .put(
+        `${apiConfig.baseURL}/api/stud/students/${editingStudent._id}`,
+        editFormData
+      )
+      .then((response) => {
+        const updatedStudent = response.data;
 
-      // Update the students list
-      setStudents((students) =>
-        students.map((student) =>
-          student._id === updatedStudent._id ? updatedStudent : student
-        )
-      );
+        // Update the students list
+        setStudents((students) =>
+          students.map((student) =>
+            student._id === updatedStudent._id ? updatedStudent : student
+          )
+        );
 
-      setEditingStudent(null); // Close the edit form
-      toast.success("Details updated successfully!");
-    })
-    .catch((err) => {
-      console.error("Error updating student:", err);
-      toast.error("Failed to update student");
-    })
-    .finally(() => {
-      setShowEditingToast(false); // Hide toast
-    });
-};
-
+        setEditingStudent(null); // Close the edit form
+        toast.success("Details updated successfully!");
+      })
+      .catch((err) => {
+        console.error("Error updating student:", err);
+        toast.error("Failed to update student");
+      })
+      .finally(() => {
+        setShowEditingToast(false); // Hide toast
+      });
+  };
 
   const filteredStudents = selectedGroup
     ? students.filter(
@@ -229,9 +230,11 @@ const handleSaveStudent = () => {
   };
 
   const getStudentCount = (groupId) => {
-      return students.filter(student => student.group && student.group._id === groupId).length;
-    };
-    
+    return students.filter(
+      (student) => student.group && student.group._id === groupId
+    ).length;
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content modal-content-list">
@@ -247,7 +250,9 @@ const handleSaveStudent = () => {
             Groups
           </button>
           <button
-            className={`btn-contact ${activeTab === "students" ? "active" : ""}`}
+            className={`btn-contact ${
+              activeTab === "students" ? "active" : ""
+            }`}
             onClick={() => setActiveTab("students")}
           >
             Contacts
@@ -279,7 +284,7 @@ const handleSaveStudent = () => {
                             className={`editstudent ${
                               activeTab === "students" ? "active" : ""
                             }`}
-                            onClick={() => handleViewcontact(group)}                          
+                            onClick={() => handleViewcontact(group)}
                           >
                             {" "}
                             <FiEye size={18} color="#282a74" />
@@ -306,26 +311,26 @@ const handleSaveStudent = () => {
 
             {editingGroup && (
               <div className="edit-student-modal-overlay">
-              <div className="edit-student-modal-contents">
-                <h3>Edit Group</h3>
-                <input
-                  type="text"
-                  value={groupName}
-                  onChange={(e) => setGroupName(e.target.value)}
-                />
-                <div className="edit-student-modal-buttons">
-                <button className="editbtn" onClick={handleSaveGroupName}>
-                  Save
-                </button>
-                <button
-                  className="cancelbtn"
-                  onClick={() => setEditingGroup(null)}
-                >
-                  Cancel
-                </button>
+                <div className="edit-student-modal-contents">
+                  <h3>Edit Group</h3>
+                  <input
+                    type="text"
+                    value={groupName}
+                    onChange={(e) => setGroupName(e.target.value)}
+                  />
+                  <div className="edit-student-modal-buttons">
+                    <button className="editbtn" onClick={handleSaveGroupName}>
+                      Save
+                    </button>
+                    <button
+                      className="cancelbtn"
+                      onClick={() => setEditingGroup(null)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
-              </div>
-            </div>
             )}
           </div>
         )}
@@ -373,17 +378,17 @@ const handleSaveStudent = () => {
                             }
                           />
                         </th>
-                         {/* Extract headers dynamically from filteredStudents to reflect the selected group */}
-    {filteredStudents.length > 0 &&
-      Object.keys(filteredStudents[0])
-        .filter(
-          (key) =>
-            key !== "_id" &&
-            key !== "group" &&
-            key !== "__v" // Exclude unwanted fields
-        )
-        .map((key, index) => <th key={index}>{key}</th>)}
-    <th>Action</th>
+                        {/* Extract headers dynamically from filteredStudents to reflect the selected group */}
+                        {filteredStudents.length > 0 &&
+                          Object.keys(filteredStudents[0])
+                            .filter(
+                              (key) =>
+                                key !== "_id" &&
+                                key !== "group" &&
+                                key !== "__v" // Exclude unwanted fields
+                            )
+                            .map((key, index) => <th key={index}>{key}</th>)}
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>

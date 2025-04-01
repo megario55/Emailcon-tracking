@@ -26,13 +26,10 @@ function Login() {
     e.preventDefault();
     setIsLoading(true); // Start loading
     try {
-      const res = await axios.post(
-        `${apiConfig.baseURL}/api/auth/login`,
-        {
-          email,
-          password,
-        }
-      );
+      const res = await axios.post(`${apiConfig.baseURL}/api/auth/login`, {
+        email,
+        password,
+      });
       console.log(res.data.user); // Check the structure of the user data
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -65,10 +62,7 @@ function Login() {
           </p>
         </div>
         <div className="login-container">
-          <h2
-            className="login-header"
-            style={{ color: "#2f327d" }}
-          >
+          <h2 className="login-header" style={{ color: "#2f327d" }}>
             Log<span style={{ color: "#f48c06" }}>in</span>
           </h2>
           <form onSubmit={handleSubmit}>

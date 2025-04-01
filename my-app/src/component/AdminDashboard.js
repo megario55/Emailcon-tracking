@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./AdminDashboard.css"; // Import the CSS file
-import { FaSignOutAlt } from 'react-icons/fa';
+import { FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import apiconfig from '../apiconfig/apiConfig.js'
+import apiconfig from "../apiconfig/apiConfig.js";
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -20,7 +20,9 @@ function AdminDashboard() {
       navigate("/admin-login"); // Redirect to login page if no adminToken
     } else {
       const fetchUsers = async () => {
-        const response = await axios.get(`${apiconfig.baseURL}/api/admin/users`);
+        const response = await axios.get(
+          `${apiconfig.baseURL}/api/admin/users`
+        );
         setUsers(response.data);
       };
       fetchUsers();
@@ -41,7 +43,9 @@ function AdminDashboard() {
         id,
         status,
       });
-      toast.success(`Account ${status ? "Activated" : "Deactivated"}`, { autoClose: 3000 });
+      toast.success(`Account ${status ? "Activated" : "Deactivated"}`, {
+        autoClose: 3000,
+      });
       setUsers((prev) =>
         prev.map((user) =>
           user._id === id ? { ...user, isActive: status } : user
@@ -67,46 +71,48 @@ function AdminDashboard() {
         </button>
       </div>
       <h2 className="admin-dashboard-heading">Emailcon Signup Details</h2>
-  <div className="cam-scroll" style={{ overflowX: "auto" }}>
-      <table className="admin-dashboard-table">
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Password</th>
-            <th>smtp passcode</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td>{user.email}</td>
-              <td>{user.username}</td>
-              <td>{user.password}</td>
-              <td>{user.smtppassword ? user.smtppassword.substring(0, 8) : ''}</td>
-              <td>{user.isActive ? "Active" : "Inactive"}</td>
-              <td>
-                {loading && loadingUserId === user._id ? (
-                  <div className="loader"></div> // Render a loader for the specific user
-                ) : (
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={user.isActive}
-                      onChange={() =>
-                        handleStatusChange(user._id, !user.isActive)
-                      }
-                    />
-                    <span className="slider"></span>
-                  </label>
-                )}
-              </td>
+      <div className="cam-scroll" style={{ overflowX: "auto" }}>
+        <table className="admin-dashboard-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>smtp passcode</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id}>
+                <td>{user.email}</td>
+                <td>{user.username}</td>
+                <td>{user.password}</td>
+                <td>
+                  {user.smtppassword ? user.smtppassword.substring(0, 8) : ""}
+                </td>
+                <td>{user.isActive ? "Active" : "Inactive"}</td>
+                <td>
+                  {loading && loadingUserId === user._id ? (
+                    <div className="loader"></div> // Render a loader for the specific user
+                  ) : (
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={user.isActive}
+                        onChange={() =>
+                          handleStatusChange(user._id, !user.isActive)
+                        }
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <ToastContainer
