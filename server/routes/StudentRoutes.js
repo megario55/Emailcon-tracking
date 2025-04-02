@@ -1560,7 +1560,6 @@ router.put("/camhistory/:id", async (req, res) => {
 });
 
 router.get("/track-email-open", async (req, res) => {
-
   const { emailId, userId, campaignId } = req.query;
 
   if (!emailId || !userId || !campaignId) {
@@ -1571,24 +1570,18 @@ router.get("/track-email-open", async (req, res) => {
   console.log(`✅ Email opened: userId=${userId}, campaignId=${campaignId}`);
 
   try {
-    // Check if an entry already exists
-    const entryExists = await EmailOpen.exists({ emailId, userId, campaignId });
-
-    if (!entryExists) {
-      console.log("📝 Saving new email open entry...");
-      const newEntry = new EmailOpen({
-        emailId,
-        userId,
-        campaignId,
-        sendTime: new Date(),
-        ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
-        userAgent: req.headers["user-agent"],
-      });
-
-      await newEntry.save();
-    } else {
-      console.log("ℹ️ Email open entry already exists.");
-    }
+    // Upsert: Update existing entry, or insert if not found
+    await EmailOpen.findOneAndUpdate(
+      { emailId, userId, campaignId }, // Query condition
+      {
+        $set: {
+          sendTime: new Date(),
+          ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
+          userAgent: req.headers["user-agent"],
+        },
+      },
+      { upsert: true, new: true } // If not found, create a new entry
+    );
 
     // Return a 1x1 transparent pixel
     const transparentPixel = Buffer.from(
@@ -1648,24 +1641,12 @@ router.get("/track-click", async (req, res) => {
   console.log(`✅ Clicked URL: ${url} | userId=${userId} | campaignId=${campaignId} | emailId=${emailId}`);
 
   try {
-    // Check if a click entry already exists
-    const existingClick = await ClickTracking.exists({ userId, campaignId, emailId, clickedUrl: url });
-
-    if (!existingClick) {
-      // Create and save the new click entry
-      const clickEntry = new ClickTracking({
-        userId,
-        campaignId,
-        emailId,
-        clickedUrl: url,
-        ipAddress: req.headers["x-forwarded-for"] || req.connection.remoteAddress,
-        userAgent: req.headers["user-agent"],
-      });
-
-      await clickEntry.save();
-    } else {
-      console.log("⚠️ Duplicate click detected, skipping insert.");
-    }
+    // Upsert to prevent duplicate click entries
+    await ClickTracking.findOneAndUpdate(
+      { userId, campaignId, emailId, clickedUrl: url }, // Find by unique combination
+      { $set: { clickedAt: new Date() } }, // Update the timestamp
+      { upsert: true, new: true } // If not found, create new entry
+    );
 
     // Redirect the user to the target URL
     res.redirect(url);
