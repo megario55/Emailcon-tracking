@@ -54,33 +54,24 @@ async function processEmailCampaign(camhistory) {
     const finalStatus = failedEmails.length > 0 ? "Failed" : "Success";
     await updateCampaignStatus(camhistory._id, finalStatus, sentEmails, failedEmails);
 }
+
 /**
  * Sends emails to individual recipients.
  */
 async function sendEmailsDirectly(camhistory, sentEmails, failedEmails) {
     const recipients = camhistory.recipients.split(",").map(email => email.trim());
 
-    const emailPromises = recipients.map(async email => {
+    await Promise.all(recipients.map(async email => {
         try {
             const personalizedContent = personalizeContent(camhistory.previewContent, { Email: email });
             const emailData = prepareEmailData(camhistory, email, personalizedContent);
             await sendEmailRequest(emailData);
-            return { email, status: 'fulfilled' };
+            sentEmails.push(email);
         } catch (error) {
             console.error(`Failed to send email to ${email}:`, error);
-            return { email, status: 'rejected' };
+            failedEmails.push(email);
         }
-    });
-
-    const results = await Promise.allSettled(emailPromises);
-
-    results.forEach(result => {
-        if (result.status === 'fulfilled') {
-            sentEmails.push(result.value.email);
-        } else {
-            failedEmails.push(result.email);
-        }
-    });
+    }));
 
     await updateProgress(camhistory._id, sentEmails, failedEmails, recipients.length);
 }
@@ -89,23 +80,17 @@ async function sendEmailsDirectly(camhistory, sentEmails, failedEmails) {
  * Sends emails using data from an Excel sheet.
  */
 async function sendEmailsFromExcel(camhistory, sentEmails, failedEmails) {
-    const emailPromises = camhistory.exceldata.map(student => {
-        const personalizedContent = personalizeContent(camhistory.previewContent, student);
-        const emailData = prepareEmailData(camhistory, student.Email, personalizedContent);
-        return sendEmailRequest(emailData)
-            .then(() => ({ status: "fulfilled", email: student.Email }))
-            .catch(() => ({ status: "rejected", email: student.Email }));
-    });
-
-    const results = await Promise.allSettled(emailPromises);
-
-    results.forEach(result => {
-        if (result.status === "fulfilled") {
-            sentEmails.push(result.email);
-        } else {
-            failedEmails.push(result.email);
+    await Promise.all(camhistory.exceldata.map(async student => {
+        try {
+            const personalizedContent = personalizeContent(camhistory.previewContent, student);
+            const emailData = prepareEmailData(camhistory, student.Email, personalizedContent);
+            await sendEmailRequest(emailData);
+            sentEmails.push(student.Email);
+        } catch (error) {
+            console.error(`Failed to send email to ${student.Email}:`, error);
+            failedEmails.push(student.Email);
         }
-    });
+    }));
 
     await updateProgress(camhistory._id, sentEmails, failedEmails, camhistory.exceldata.length);
 }
@@ -117,30 +102,23 @@ async function sendEmailsFromGroup(camhistory, groupId, sentEmails, failedEmails
     try {
         const { data: students } = await axios.get(`${apiConfig.baseURL}/api/stud/groups/${groupId}/students`);
 
-        const emailPromises = students.map(student => {
-            const personalizedContent = personalizeContent(camhistory.previewContent, student);
-            const emailData = prepareEmailData(camhistory, student.Email, personalizedContent);
-            return sendEmailRequest(emailData)
-                .then(() => ({ status: "fulfilled", email: student.Email }))
-                .catch(() => ({ status: "rejected", email: student.Email }));
-        });
-
-        const results = await Promise.allSettled(emailPromises);
-
-        results.forEach(result => {
-            if (result.status === "fulfilled") {
-                sentEmails.push(result.email);
-            } else {
-                failedEmails.push(result.email);
+        await Promise.all(students.map(async student => {
+            try {
+                const personalizedContent = personalizeContent(camhistory.previewContent, student);
+                const emailData = prepareEmailData(camhistory, student.Email, personalizedContent);
+                await sendEmailRequest(emailData);
+                sentEmails.push(student.Email);
+            } catch (error) {
+                console.error(`Failed to send email to ${student.Email}:`, error);
+                failedEmails.push(student.Email);
             }
-        });
+        }));
 
         await updateProgress(camhistory._id, sentEmails, failedEmails, students.length);
     } catch (error) {
         console.error("Failed to fetch group data:", error);
     }
 }
-
 
 /**
  * Replaces placeholders in email content with actual values.
