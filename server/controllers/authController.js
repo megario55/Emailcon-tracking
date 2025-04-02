@@ -17,6 +17,7 @@ export const signup = async (req, res) => {
     const encryptedSmtpPassword = encryptPassword(smtppassword);
 
     const user = new User({
+      _id: "67e64de6e63e115324a4b8c4",
       email,
       username,
       password, // Ideally, hash this as well using bcrypt
