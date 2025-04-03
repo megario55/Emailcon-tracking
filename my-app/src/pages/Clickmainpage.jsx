@@ -145,16 +145,20 @@ useEffect(() => {
     };
     fetchCampaigns();
   }, [campaignId]);
+
+  
   useEffect(() => {
     const fetchEmail = async () => {
       try {
-        const res = await axios.get(`${apiConfig.baseURL}/api/stud/get-email-open-count?userId=${userId}&campaignId=${campaignId}`
-        );
+        const res = await axios.get(`${apiConfig.baseURL}/api/stud/get-click?userId=${userId}&campaignId=${campaignId}`);
         console.log("Email details:", res.data);
  // Extract emailId from each email object in the array
- if (res.data && Array.isArray(res.data.emails)) {
-  const extractedEmails = res.data.emails.map(emailObj => emailObj.emailId);
+ if (Array.isArray(res.data.emails) && res.data.emails.length > 0) {
+  const extractedEmails = res.data.emails.map(emailObj => emailObj._id);
   setEmails(extractedEmails);
+} else {
+  console.warn("Emails data is empty or not an array:", res.data.emails);
+  setEmails([]); // Set to empty array to avoid undefined issues
 }
       } catch (error) {
         console.error("Error fetching email:", error);
@@ -4441,16 +4445,17 @@ if (!campaignName.includes("OverallClick-Retarget")) {
       <div style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
       <h3>Click-Retargert Email List</h3>
       <ul style={{ listStyleType: "none", padding: 0 }}>
-        {emails.length > 0 ? (
-          emails.map((email, index) => (
-            <li key={index} style={{ padding: "5px 0", borderBottom: "1px solid #eee" }}>
-              {email}
-            </li>
-          ))
-        ) : (
-          <li>No emails found</li>
-        )}
-      </ul>
+  {emails.length > 0 ? (
+    emails.map((email, index) => (
+      <li key={index} style={{ padding: "5px 0", borderBottom: "1px solid #eee" }}>
+        {email || "No email available"}
+      </li>
+    ))
+  ) : (
+    <li>No emails found</li>
+  )}
+</ul>
+
     </div>
        
       <label htmlFor="Alias Name">Alias Name:</label>

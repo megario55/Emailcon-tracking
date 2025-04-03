@@ -216,6 +216,7 @@ function CampaignTable() {
         failedEmails: failedEmails.length > 0 ? [...failedEmails] : 0,
         failedcount: failedEmails.length > 0 ? failedEmails.length : 0,
         status: finalStatus,
+        
       });
       console.log("Emails resent successfully!");
 
@@ -239,6 +240,7 @@ function CampaignTable() {
         failedEmails.push(email);
         continue;
       }
+     
 
       // Personalize email content with student details
       const personalizedContent = campaign.previewContent.map((item) => {
@@ -324,6 +326,13 @@ function CampaignTable() {
         failedEmails.push(email);
         continue;
       }
+        // Replace placeholders in subject
+  let personalizedSubject = campaign.subject;
+  Object.entries(student).forEach(([key, value]) => {
+    const placeholderRegex = new RegExp(`\\{?${key}\\}?`, "g");
+    const cellValue = value != null ? String(value).trim() : "";
+    personalizedSubject = personalizedSubject.replace(placeholderRegex, cellValue);
+  });
 
       // Personalize email content with student details
       const personalizedContent = campaign.previewContent.map((item) => {
@@ -341,7 +350,7 @@ function CampaignTable() {
 
       const emailData = {
         recipientEmail: email,
-        subject: campaign.subject,
+        subject:personalizedSubject,
         body: JSON.stringify(personalizedContent),
         bgColor: campaign.bgColor,
         previewtext: campaign.previewtext,

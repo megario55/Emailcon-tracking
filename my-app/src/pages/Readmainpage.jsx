@@ -150,7 +150,7 @@ useEffect(() => {
       try {
         const res = await axios.get(`${apiConfig.baseURL}/api/stud/get-email-open-count?userId=${userId}&campaignId=${campaignId}`
         );
-        console.log("Email details:", res.data);
+        console.log("Email details read:", res.data);
  // Extract emailId from each email object in the array
  if (res.data && Array.isArray(res.data.emails)) {
   const extractedEmails = res.data.emails.map(emailObj => emailObj.emailId);
