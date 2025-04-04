@@ -104,13 +104,13 @@ router.post('/sendtestmail', async (req, res) => {
       if (item.type === 'para') {
         return `<div class="para" style="border-radius:10px;font-size:${item.style.fontSize};padding:10px; color:${item.style.color}; margin-top:20px; background-color:${item.style.backgroundColor}">${item.content}</div>`;
       } else if (item.type === 'head') {
-        return `<p class="head" style="font-size:${item.style.fontSize};border-radius:10px;padding:10px;font-weight:bold;color:${item.style.color};text-align:${item.style.textAlign};background-color:${item.style.backgroundColor}">${item.content}</p>`;
+        return `<p class="head" style="font-size:${item.style.fontSize};border-radius:10px;margin-top:10px;padding:10px;font-weight:bold;color:${item.style.color};text-align:${item.style.textAlign};background-color:${item.style.backgroundColor}">${item.content}</p>`;
       } else if (item.type === 'logo') {
-        return `<div style="text-align:${item.style.textAlign};margin:0 auto !important">
+        return `<div style="text-align:${item.style.textAlign};margin:10px auto !important">
         <img src="${item.src}" style="width:${item.style.width};height:${item.style.height};border-radius:${item.style.borderRadius};pointer-events:none;margin:${item.style.margin};background-color:${item.style.backgroundColor};"/>
         </div>`
       } else if (item.type === 'image') {
-        return `<div style="text-align:${item.style.textAlign};margin:0 auto !important">
+        return `<div style="text-align:${item.style.textAlign};margin:10px auto !important">
         <img src="${item.src}" style="margin-top:10px;width:${item.style.width};pointer-events:none;height:${item.style.height};border-radius:10px;background-color:${item.style.backgroundColor}"/>
         </div>`;
       }
@@ -139,7 +139,7 @@ router.post('/sendtestmail', async (req, res) => {
                     <a class = "img-btn"
                     href="${generateTrackingLink(item.link1, userId, campaignId, emailData.recipient)}"
                     target = "_blank"
-                    style = "display:inline-block;padding:12px 25px;width:${item.buttonStyle1.width || 'auto'};color:${item.buttonStyle1.color || '#000'};text-decoration:none;background-color:${item.buttonStyle1.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle1.textAlign || 'left'};border-radius:${item.buttonStyle1.borderRadius || '5px'};" >
+                    style = "display:inline-block;padding:12px 25px;margin-top:20px;width:${item.buttonStyle1.width || 'auto'};color:${item.buttonStyle1.color || '#000'};text-decoration:none;background-color:${item.buttonStyle1.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle1.textAlign || 'left'};border-radius:${item.buttonStyle1.borderRadius || '5px'};" >
                         ${item.content1}
                     </a>
             </td>
@@ -148,7 +148,7 @@ router.post('/sendtestmail', async (req, res) => {
                     <a class = "img-btn"
                     href="${generateTrackingLink(item.link2, userId, campaignId, emailData.recipient)}"
                     target = "_blank"
-                    style = "display:inline-block;padding:12px 25px;width:${item.buttonStyle2.width || 'auto'};color:${item.buttonStyle2.color || '#000'};text-decoration:none;background-color:${item.buttonStyle2.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle2.textAlign || 'left'};border-radius:${item.buttonStyle2.borderRadius || '5px'};" >
+                    style = "display:inline-block;padding:12px 25px;margin-top:20px;width:${item.buttonStyle2.width || 'auto'};color:${item.buttonStyle2.color || '#000'};text-decoration:none;background-color:${item.buttonStyle2.backgroundColor || '#f0f0f0'};text-align:${item.buttonStyle2.textAlign || 'left'};border-radius:${item.buttonStyle2.borderRadius || '5px'};" >
                         ${item.content2}
                     </a>
             </td>
@@ -226,7 +226,7 @@ router.post('/sendtestmail', async (req, res) => {
       }
 
       else if (item.type === 'imagewithtext') {
-        return `<table class="image-text" style="width:100%;height:220px !important;background-color:${item.style1.backgroundColor || '#f4f4f4'}; border-collapse:seperate;border-radius:${item.style1.borderRadius || '10px'};margin:15px 0px !important">
+        return `<table class="image-text" style="width:100%;height:220px !important;background-color:${item.style1.backgroundColor || '#f4f4f4'}; border-collapse:seperate;border-radius:${item.style1.borderRadius || '10px'};margin:20px 0px !important">
         <tr>
             <td style = "vertical-align:top;padding:10px;" >
                 <img src="${item.src1}" style="border-radius:10px;width:200px !important;height:auto;pointer-events:none !important; object-fit:cover;" alt="image"/>                  
@@ -241,7 +241,7 @@ router.post('/sendtestmail', async (req, res) => {
       }
 
       else if (item.type === 'textwithimage') {
-        return `<table class="image-text" style="width:100%;height:220px !important;background-color:${item.style.backgroundColor || '#f4f4f4'}; border-collapse:seperate;border-radius:${item.style.borderRadius || '10px'};margin:15px 0px !important">
+        return `<table class="image-text" style="width:100%;height:220px !important;background-color:${item.style.backgroundColor || '#f4f4f4'}; border-collapse:seperate;border-radius:${item.style.borderRadius || '10px'};margin:20px 0px !important">
         <tr>
           <td style = "vertical-align:top;padding:10px;color:${item.style.color || 'black'};" >
                 <div class="img-para" style="overflow: auto;max-height: 200px !important;font-size:18px;">
@@ -255,7 +255,7 @@ router.post('/sendtestmail', async (req, res) => {
     </table>`
       }
       else if (item.type === 'link-image') {
-        return `<div style="text-align:${item.style.textAlign};margin:0 auto !important">
+        return `<div style="text-align:${item.style.textAlign};margin:10px auto !important">
         <a href="${generateTrackingLink(item.link, userId, campaignId, emailData.recipient)}" taget="_blank" style="text-decoration:none;"><img src="${item.src}" style="margin-top:10px;width:${item.style.width};text-align:${item.style.textAlign};pointer-events:none;height:${item.style.height};border-radius:10px;background-color:${item.style.backgroundColor}"/></a>
         </div>`;
       } else if (item.type === 'button') {
@@ -336,7 +336,7 @@ router.post('/sendtestmail', async (req, res) => {
                 // }
                  .img-btn{
                   width:85% !important;
-                  margin:10px auto !important;
+                  margin:20px auto !important;
                   font-size:10px !important;
                   padding:10px !important;
                   
@@ -474,12 +474,12 @@ router.post('/sendexcelEmail', async (req, res) => {
       };
       switch (type) {
         case 'logo':
-          return `<div style="margin:0 auto !important;${styleString};">
+          return `<div style="margin:10px auto !important;${styleString};">
                   <img src="${src}" style="margin-top:10px;${styleString};" alt="image"/>
                 </div>`;
 
         case 'image':
-          return `<div class="img-case" style="margin:0 auto !important;${styleString};">
+          return `<div class="img-case" style="margin:10px auto !important;${styleString};">
        <img src="${src}" style="${styleString};border-radius:10px;margin-top:10px;" alt="image" />
        </div>`;
 
@@ -584,7 +584,7 @@ router.post('/sendexcelEmail', async (req, res) => {
     </table>`;
 
         case 'link-image':
-          return `<div class="img-case" style="margin:0 auto !important;${styleString};">
+          return `<div class="img-case" style="margin:10px auto !important;${styleString};">
         <a href = "${generateTrackingLink(link, userId, campaignId, recipientEmail)}"  target = "_blank" style="text-decoration:none;"><img src="${src}" style="${styleString};margin-top:10px;border-radius:10px;" alt="image"/></a>
         </div>`;
 
@@ -593,13 +593,13 @@ router.post('/sendexcelEmail', async (req, res) => {
           <tr>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src1}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover; ${styleString}" alt="image"/>
-                  <a class="img-btn" href="${generateTrackingLink(link1, userId, campaignId, recipientEmail)}" target="_blank" style="${stylebuttonString1}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link1, userId, campaignId, recipientEmail)}" target="_blank" style="${stylebuttonString1}; display:inline-block; margin-top:20px;padding:12px 25px; text-decoration:none;">
                       ${content1}
                   </a>
               </td>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src2}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;${styleString}" alt="image"/>
-                  <a class="img-btn" href="${generateTrackingLink(link2, userId, campaignId, recipientEmail)}" target="_blank" style="${stylebuttonString2}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link2, userId, campaignId, recipientEmail)}" target="_blank" style="${stylebuttonString2}; display:inline-block;margin-top:20px; padding:12px 25px; text-decoration:none;">
                       ${content2}
                   </a>
               </td>
@@ -618,9 +618,9 @@ router.post('/sendexcelEmail', async (req, res) => {
       </table>`
 
         case 'head':
-          return `<p class="head" style="${styleString};border-radius:10px;padding:10px;font-weight:bold;">${content}</p>`;
+          return `<p class="head" style="${styleString};border-radius:10px;margin-top:10px;padding:10px;font-weight:bold;">${content}</p>`;
         case 'para':
-          return `<div class="para" style="${styleString};border-radius:10px;padding:10px;">${content}</div>`;
+          return `<div class="para" style="${styleString};border-radius:10px;margin-top:20px;padding:10px;">${content}</div>`;
         case 'button':
           return `<div style="margin:20px auto 0 auto;text-align:center;">
                   <a href = "${generateTrackingLink(link, userId, campaignId, recipientEmail)}"
@@ -714,7 +714,7 @@ router.post('/sendexcelEmail', async (req, res) => {
                 // }
                  .img-btn{
                   width:85% !important;
-                  margin:10px auto !important;
+                  margin:20px auto !important;
                   font-size:10px !important;
                   padding:10px !important;
                   
@@ -848,12 +848,12 @@ router.post('/sendbulkEmail', async (req, res) => {
 
       switch (type) {
         case 'logo':
-          return `<div style="margin:0 auto !important;${styleString};">
+          return `<div style="margin:10px auto !important;${styleString};">
                   <img src="${src}" style="margin-top:10px;${styleString};" alt="image"/>
                 </div>`;
 
         case 'image':
-          return `<div class="img-case" style="margin:0 auto !important;${styleString};">
+          return `<div class="img-case" style="margin:10px auto !important;${styleString};">
        <img src="${src}" style="${styleString};border-radius:10px;margin-top:10px;" alt="image" />
        </div>`;
 
@@ -960,7 +960,7 @@ router.post('/sendbulkEmail', async (req, res) => {
     </table>`;
 
         case 'link-image':
-          return `<div class="img-case" style="margin:0 auto !important;${styleString};">
+          return `<div class="img-case" style="margin:10px auto !important;${styleString};">
         <a href ="${generateTrackingLink(link, userId, campaignId, recipientEmail)}" target = "_blank" style="text-decoration:none;"><img src="${src}" style="${styleString};margin-top:10px;border-radius:10px;" alt="image"/></a>
         </div>`;
 
@@ -969,13 +969,13 @@ router.post('/sendbulkEmail', async (req, res) => {
           <tr>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src1}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover; ${styleString}" alt="image"/>
-                  <a class="img-btn" href="${generateTrackingLink(link1, userId, campaignId, recipientEmail)}"  target="_blank" style="${stylebuttonString1}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link1, userId, campaignId, recipientEmail)}"  target="_blank" style="${stylebuttonString1}; display:inline-block;margin-top:20px; padding:12px 25px; text-decoration:none;">
                       ${content1}
                   </a>
               </td>
               <td style="width:50%;text-align:center;padding:8px; vertical-align:top;">
                   <img src="${src2}" style="border-radius:10px;object-fit:contain;height:230px !important;width:100%;pointer-events:none !important; object-fit:cover;${styleString}" alt="image"/>
-                  <a class="img-btn" href="${generateTrackingLink(link2, userId, campaignId, recipientEmail)}" target="_blank" style="${stylebuttonString2}; display:inline-block; padding:12px 25px; text-decoration:none;">
+                  <a class="img-btn" href="${generateTrackingLink(link2, userId, campaignId, recipientEmail)}" target="_blank" style="${stylebuttonString2}; display:inline-block;margin-top:20px; padding:12px 25px; text-decoration:none;">
                       ${content2}
                   </a>
               </td>
@@ -995,9 +995,9 @@ router.post('/sendbulkEmail', async (req, res) => {
       </table>`
 
         case 'head':
-          return `<p class="head" style="${styleString};border-radius:10px;padding:10px;font-weight:bold;">${content}</p>`;
+          return `<p class="head" style="${styleString};border-radius:10px;margin-top:10px;padding:10px;font-weight:bold;">${content}</p>`;
         case 'para':
-          return `<div class="para" style="${styleString};border-radius:10px;padding:10px;">${content}</div>`;
+          return `<div class="para" style="${styleString};border-radius:10px;margin-top:20px;padding:10px;">${content}</div>`;
         case 'button':
           return `<div style="margin:20px auto 0 auto;text-align:center;">
                   <a href = "${generateTrackingLink(link, userId, campaignId, recipientEmail)}"
@@ -1090,7 +1090,7 @@ router.post('/sendbulkEmail', async (req, res) => {
                 // }
                  .img-btn{
                   width:85% !important;
-                  margin:10px auto !important;
+                  margin:20px auto !important;
                   font-size:10px !important;
                   padding:10px !important;
                   
