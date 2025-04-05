@@ -299,7 +299,8 @@ const SendbulkModal = ({ isOpen, onClose, previewContent = [], bgColor }) => {
       const campaignId = campaignResponse.data.id; // Assume response includes campaign ID
       console.log("Initial Campaign History Saved:", campaignResponse.data);
 
-      await Promise.allSettled(students.map(async (student) => {
+      await Promise.allSettled(
+        students.map(async (student) => {
           const personalizedContent = previewContent.map((item) => {
             const personalizedItem = { ...item };
 
@@ -353,14 +354,14 @@ const SendbulkModal = ({ isOpen, onClose, previewContent = [], bgColor }) => {
           }
           // **Update progress dynamically**
           const totalEmails = students.length;
-          const successProgress = Math.round(
-            (sentEmails.length / totalEmails) * 100
-          );
+          // const successProgress = Math.round(
+          //   (sentEmails.length / totalEmails) * 100
+          // );
           const failProgress = Math.round(
             (failedEmails.length / totalEmails) * 100
           );
           const currentProgress =
-            failedEmails.length > 0 ? failProgress : successProgress;
+            failedEmails.length > 0 ? failProgress : 100;
 
           // **Update the database after each email is processed**
           await axios.put(

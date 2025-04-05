@@ -79,6 +79,8 @@ const templateRef = useRef(null);
 const [openedGroups, setOpenedGroups] = useState({});
 const dropdownRef = useRef(null);
 
+
+
 const handleGroupChange = (e, index) => {
   const groupName = e.target.value;
 
@@ -634,6 +636,8 @@ const handleTemplateSelect = (template) => {
           color: "#ffffff",
           width: "auto",
           marginTop: "5px",
+          fontWeight: "bold",
+          fontSize: "15px",
           alignItem: "center",
           borderRadius: "5px",
         },
@@ -895,9 +899,9 @@ const sendscheduleEmail = async () => {
         }
         // Update progress dynamically
         const totalEmails = recipients.length;
-        const successProgress = Math.round((sentEmails.length / totalEmails) * 100);
+        // const successProgress = Math.round((sentEmails.length / totalEmails) * 100);
         const failProgress = Math.round((failedEmails.length / totalEmails) * 100);
-        const currentProgress = failedEmails.length > 0 ? failProgress : successProgress;
+        const currentProgress = failedEmails.length > 0 ? failProgress : 100;
   
         // Update the database after each email is processed
         await axios.put(`${apiConfig.baseURL}/api/stud/camhistory/${campaignId}`, {
@@ -1536,52 +1540,51 @@ const sendscheduleEmail = async () => {
                                     <option value="center">Center</option>
                                     <option value="right">Right</option>
                                   </select>
-
                                   <label>Button Size:</label>
-                                  <div>
-                                    <button
-                                      className="modal-btn-size"
-                                      onClick={() =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            width: "auto",
-                                          },
-                                        })
-                                      }
-                                    >
-                                      Small
-                                    </button>
-                                    <button
-                                      className="modal-btn-size"
-                                      onClick={() =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            width: "60%",
-                                          },
-                                        })
-                                      }
-                                    >
-                                      Medium
-                                    </button>
-                                    <button
-                                      className="modal-btn-size"
-                                      onClick={() =>
-                                        updateContent(selectedIndex, {
-                                          style: {
-                                            ...previewContent[selectedIndex]
-                                              .style,
-                                            width: "85%",
-                                          },
-                                        })
-                                      }
-                                    >
-                                      Large
-                                    </button>
-                                  </div>
+<div>
+  <button
+    className="modal-btn-size"
+    onClick={() =>
+      updateContent(selectedIndex, {
+        style: {
+          ...previewContent[selectedIndex].style,
+          width: "50%",
+          margin: "0 auto", // Centering the button
+        },
+      })
+    }
+  >
+    Small
+  </button>
+  <button
+    className="modal-btn-size"
+    onClick={() =>
+      updateContent(selectedIndex, {
+        style: {
+          ...previewContent[selectedIndex].style,
+          width: "70%",
+          margin: "0 auto",
+        },
+      })
+    }
+  >
+    Medium
+  </button>
+  <button
+    className="modal-btn-size"
+    onClick={() =>
+      updateContent(selectedIndex, {
+        style: {
+          ...previewContent[selectedIndex].style,
+          width: "90%",
+          margin: "0 auto",
+        },
+      })
+    }
+  >
+    Large
+  </button>
+</div>
 
                                   <label>Border Radius:</label>
                                   <input
@@ -1603,6 +1606,25 @@ const sendscheduleEmail = async () => {
                                       })
                                     }
                                   />
+                                  <label>Button Text Size:</label>
+                            <input
+                              type="range"
+                              min="10"
+                              max="30"
+                              value={parseInt(
+                                (previewContent[selectedIndex]?.style?.fontSize || "15px").replace("px", "")
+                              )}
+                              onChange={(e) =>
+                                updateContent(selectedIndex, {
+                                  style: {
+                                    ...previewContent[selectedIndex].style,
+                                    fontSize: `${e.target.value}px`,
+                                  },
+                                })
+                              }
+                            />
+
+
 
                                   <label>Link:</label>
                                   <input
@@ -1997,6 +2019,27 @@ const sendscheduleEmail = async () => {
                                     %
                                   </span>
 
+                                  <label>Border Radius:</label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              value={parseInt(
+                                previewContent[
+                                  selectedIndex
+                                ].style.borderRadius.replace("px", "")
+                              )}
+                              onChange={(e) =>
+                                updateContent(selectedIndex, {
+                                  style: {
+                                    ...previewContent[selectedIndex].style,
+                                    borderRadius: `${e.target.value}px`,
+                                  },
+                                })
+                              }
+                            />
+
+
                                   <ColorPicker
         label="Image Background"
         objectKey="style.backgroundColor"
@@ -2210,6 +2253,26 @@ const sendscheduleEmail = async () => {
                                     )}
                                     %
                                   </span>
+                                  <label>Border Radius:</label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              value={parseInt(
+                                previewContent[
+                                  selectedIndex
+                                ].style.borderRadius.replace("px", "")
+                              )}
+                              onChange={(e) =>
+                                updateContent(selectedIndex, {
+                                  style: {
+                                    ...previewContent[selectedIndex].style,
+                                    borderRadius: `${e.target.value}px`,
+                                  },
+                                })
+                              }
+                            />
+
        
               <ColorPicker
         label="Image Background"
@@ -2413,49 +2476,52 @@ const sendscheduleEmail = async () => {
                               <option value="center">Center</option>
                               <option value="right">Right</option>
                             </select>
-
                             <label>Button Size:</label>
-                            <div>
-                              <button
-                                className="modal-btn-size"
-                                onClick={() =>
-                                  updateContent(selectedIndex, {
-                                    style: {
-                                      ...previewContent[selectedIndex].style,
-                                      width: "auto",
-                                    },
-                                  })
-                                }
-                              >
-                                Small
-                              </button>
-                              <button
-                                className="modal-btn-size"
-                                onClick={() =>
-                                  updateContent(selectedIndex, {
-                                    style: {
-                                      ...previewContent[selectedIndex].style,
-                                      width: "60%",
-                                    },
-                                  })
-                                }
-                              >
-                                Medium
-                              </button>
-                              <button
-                                className="modal-btn-size"
-                                onClick={() =>
-                                  updateContent(selectedIndex, {
-                                    style: {
-                                      ...previewContent[selectedIndex].style,
-                                      width: "85%",
-                                    },
-                                  })
-                                }
-                              >
-                                Large
-                              </button>
-                            </div>
+<div>
+  <button
+    className="modal-btn-size"
+    onClick={() =>
+      updateContent(selectedIndex, {
+        style: {
+          ...previewContent[selectedIndex].style,
+          width: "50%",
+          margin: "0 auto", // Centering the button
+        },
+      })
+    }
+  >
+    Small
+  </button>
+  <button
+    className="modal-btn-size"
+    onClick={() =>
+      updateContent(selectedIndex, {
+        style: {
+          ...previewContent[selectedIndex].style,
+          width: "70%",
+          margin: "0 auto",
+        },
+      })
+    }
+  >
+    Medium
+  </button>
+  <button
+    className="modal-btn-size"
+    onClick={() =>
+      updateContent(selectedIndex, {
+        style: {
+          ...previewContent[selectedIndex].style,
+          width: "90%",
+          margin: "0 auto",
+        },
+      })
+    }
+  >
+    Large
+  </button>
+</div>
+
 
                             <label>Border Radius:</label>
                             <input
@@ -2476,6 +2542,24 @@ const sendscheduleEmail = async () => {
                                 })
                               }
                             />
+                             <label>Button Text Size:</label>
+                            <input
+                              type="range"
+                              min="10"
+                              max="30"
+                              value={parseInt(
+                                (previewContent[selectedIndex]?.style?.fontSize || "15px").replace("px", "")
+                              )}
+                              onChange={(e) =>
+                                updateContent(selectedIndex, {
+                                  style: {
+                                    ...previewContent[selectedIndex].style,
+                                    fontSize: `${e.target.value}px`,
+                                  },
+                                })
+                              }
+                            />
+
 
                             <label>Link:</label>
                             <input
@@ -2912,6 +2996,26 @@ const sendscheduleEmail = async () => {
                               %
                             </span>
 
+                            <label>Border Radius:</label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              value={parseInt(
+                                previewContent[
+                                  selectedIndex
+                                ].style.borderRadius.replace("px", "")
+                              )}
+                              onChange={(e) =>
+                                updateContent(selectedIndex, {
+                                  style: {
+                                    ...previewContent[selectedIndex].style,
+                                    borderRadius: `${e.target.value}px`,
+                                  },
+                                })
+                              }
+                            />
+
                             <div className="editor-bg">
                               Image Background
                               <input
@@ -3254,6 +3358,26 @@ const sendscheduleEmail = async () => {
                               )}
                               %
                             </span>
+                            <label>Border Radius:</label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              value={parseInt(
+                                previewContent[
+                                  selectedIndex
+                                ].style.borderRadius.replace("px", "")
+                              )}
+                              onChange={(e) =>
+                                updateContent(selectedIndex, {
+                                  style: {
+                                    ...previewContent[selectedIndex].style,
+                                    borderRadius: `${e.target.value}px`,
+                                  },
+                                })
+                              }
+                            />
+
 
                             <div className="editor-bg">
                               Image Background
@@ -3281,7 +3405,7 @@ const sendscheduleEmail = async () => {
                 </>
               )}
             </>
-          </div>
+    </div>
 
           {/* Right Preview */}
           <div className="preview-container item-1">
@@ -4344,6 +4468,7 @@ const sendscheduleEmail = async () => {
 
         {/* Modal */}
 {modalOpen && (
+  
   <div className="modal">
     <div className="modal-content testmail-content">
       <h2>Send Single Mail</h2>
@@ -4355,10 +4480,8 @@ const sendscheduleEmail = async () => {
         value={emailData.recipient}
         onChange={(e) =>
           setEmailData({ ...emailData, recipient: e.target.value })
-        }
-      />
-          <label htmlFor="Alias Name">Alias Name:</label>
-
+        }/>
+      <label htmlFor="Alias Name">Alias Name:</label>
       <input
         type="text"
         placeholder="Alias Name"
@@ -4376,6 +4499,7 @@ const sendscheduleEmail = async () => {
           setEmailData({ ...emailData, subject: e.target.value })
         }
       />
+     
       <label htmlFor="preview-text">Preview Text:</label>
       <input
         type="text"
