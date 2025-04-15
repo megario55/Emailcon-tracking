@@ -6,7 +6,9 @@
   /* background-color: #f4f4f4; */
   overflow: hidden !important;
 }
-
+.content-item-preview{
+  width:95% !important;
+}
 .modal-overlay-tem {
   position: fixed;
   top: 0;
