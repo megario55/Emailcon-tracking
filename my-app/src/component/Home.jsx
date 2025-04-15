@@ -493,7 +493,7 @@ const Home = () => {
                       if (!item || !item.type) return null;
                       return (
                         <div
-                          className="content-item-preview"
+                          className="content-item-preview-home"
                           style={item.style}
                           key={index}
                         >
